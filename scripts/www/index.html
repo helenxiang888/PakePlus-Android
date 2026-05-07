@@ -1,0 +1,674 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no, viewport-fit=cover">
+    <title>水印相机 · 自定义时间位置</title>
+    <style>
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+            -webkit-tap-highlight-color: transparent;
+        }
+
+        body {
+            background: #1a1a2e;
+            font-family: system-ui, -apple-system, 'Segoe UI', Roboto, Helvetica, Arial, sans-serif;
+            padding: 16px 12px 40px;
+            color: #eee;
+        }
+
+        /* 主容器 */
+        .app-container {
+            max-width: 550px;
+            margin: 0 auto;
+            background: #0f0f1a;
+            border-radius: 36px;
+            overflow: hidden;
+            box-shadow: 0 20px 35px -12px rgba(0, 0, 0, 0.5);
+            backdrop-filter: blur(2px);
+            border: 1px solid rgba(255, 255, 255, 0.08);
+        }
+
+        /* 头部 */
+        .header {
+            padding: 20px 20px 12px;
+            text-align: center;
+            border-bottom: 1px solid rgba(255, 255, 255, 0.1);
+            background: rgba(0, 0, 0, 0.3);
+        }
+        .header h1 {
+            font-size: 1.8rem;
+            letter-spacing: -0.5px;
+            background: linear-gradient(135deg, #FFD166, #F4A261);
+            -webkit-background-clip: text;
+            background-clip: text;
+            color: transparent;
+            font-weight: 700;
+        }
+        .header p {
+            font-size: 0.75rem;
+            opacity: 0.7;
+            margin-top: 6px;
+        }
+
+        /* 图片预览区 (水印成品) */
+        .preview-area {
+            padding: 20px;
+            background: #00000030;
+        }
+        .watermark-result {
+            background: #0a0a12;
+            border-radius: 28px;
+            overflow: hidden;
+            box-shadow: 0 8px 20px rgba(0, 0, 0, 0.4);
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            min-height: 280px;
+            border: 1px solid rgba(255, 255, 255, 0.15);
+        }
+        #outputImage {
+            max-width: 100%;
+            max-height: 480px;
+            display: block;
+            object-fit: contain;
+            background: #222;
+            transition: 0.2s;
+        }
+        .placeholder-text {
+            text-align: center;
+            color: #aaa;
+            padding: 60px 20px;
+            font-size: 0.9rem;
+        }
+
+        /* 按钮组 */
+        .action-row {
+            display: flex;
+            gap: 12px;
+            padding: 8px 20px 16px;
+            flex-wrap: wrap;
+        }
+        .btn {
+            flex: 1;
+            background: #2c2c3a;
+            border: none;
+            padding: 12px 0;
+            border-radius: 60px;
+            color: white;
+            font-weight: 600;
+            font-size: 0.9rem;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            gap: 8px;
+            backdrop-filter: blur(4px);
+            transition: all 0.2s ease;
+            cursor: pointer;
+            box-shadow: 0 2px 6px rgba(0,0,0,0.2);
+        }
+        .btn-primary {
+            background: #F4A261;
+            color: #1e1e2a;
+            font-weight: 700;
+        }
+        .btn-primary:active { background: #e76f51; transform: scale(0.97);}
+        .btn-outline {
+            background: rgba(255,255,240,0.08);
+            border: 1px solid #F4A26180;
+        }
+        .btn:active { transform: scale(0.97); opacity: 0.9;}
+        .icon { font-size: 1.2rem; }
+
+        /* 自定义编辑卡 */
+        .settings-card {
+            background: #14141fcc;
+            backdrop-filter: blur(8px);
+            margin: 8px 16px 20px;
+            border-radius: 32px;
+            padding: 18px 18px 22px;
+            border: 1px solid rgba(255, 255, 255, 0.08);
+        }
+        .setting-group {
+            margin-bottom: 20px;
+        }
+        .setting-label {
+            display: flex;
+            align-items: center;
+            gap: 8px;
+            font-size: 0.85rem;
+            font-weight: 500;
+            margin-bottom: 8px;
+            letter-spacing: 0.5px;
+            color: #ddd;
+        }
+        .setting-label i { font-size: 1.1rem; }
+        input, select, .color-input {
+            width: 100%;
+            padding: 12px 14px;
+            background: #1c1c2a;
+            border: 1px solid #333345;
+            border-radius: 24px;
+            color: #fff;
+            font-size: 0.9rem;
+            outline: none;
+            transition: 0.2s;
+        }
+        input:focus, select:focus {
+            border-color: #F4A261;
+            box-shadow: 0 0 0 2px #f4a26130;
+        }
+        .double-row {
+            display: flex;
+            gap: 12px;
+            flex-wrap: wrap;
+        }
+        .double-row > * {
+            flex: 1;
+        }
+        .color-row {
+            display: flex;
+            align-items: center;
+            gap: 12px;
+        }
+        #watermarkColor {
+            width: 50px;
+            height: 45px;
+            border-radius: 30px;
+            border: 2px solid white;
+            background: white;
+            cursor: pointer;
+        }
+        .range-value {
+            display: inline-block;
+            background: #252536;
+            padding: 4px 12px;
+            border-radius: 30px;
+            font-size: 0.8rem;
+            margin-left: 8px;
+        }
+        .inline-badge {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+        }
+        button.small-btn {
+            background: #2c2c42;
+            padding: 8px 14px;
+            border-radius: 30px;
+            font-size: 0.75rem;
+            border: none;
+            color: #FFD966;
+            cursor: pointer;
+        }
+        hr {
+            border-color: #2a2a3a;
+            margin: 16px 0;
+        }
+        .footer-note {
+            font-size: 0.7rem;
+            text-align: center;
+            opacity: 0.6;
+            padding: 12px;
+        }
+        @media (max-width: 480px) {
+            .btn { font-size: 0.8rem; padding: 10px 0;}
+            .settings-card { padding: 14px; }
+        }
+    </style>
+</head>
+<body>
+
+<div class="app-container">
+    <div class="header">
+        <h1>📸 水印相机 · PRO</h1>
+        <p>自定义位置｜自定义时间｜专属水印</p>
+    </div>
+
+    <!-- 水印成品展示区 -->
+    <div class="preview-area">
+        <div class="watermark-result">
+            <img id="outputImage" src="" alt="带水印图片" style="width:100%;">
+        </div>
+    </div>
+
+    <!-- 图片获取按钮组：拍照 / 相册 -->
+    <div class="action-row">
+        <button class="btn" id="photoBtn">📷 拍照</button>
+        <button class="btn" id="galleryBtn">🖼️ 相册选择</button>
+    </div>
+
+    <!-- 水印自定义核心区域 -->
+    <div class="settings-card">
+        <div class="setting-group">
+            <div class="setting-label"><i>📍</i> 位置文字 (可完全自定义)</div>
+            <div class="double-row">
+                <input type="text" id="locationInput" placeholder="输入地点，如: 西湖·断桥残雪" value="杭州 · 西湖景区">
+                <button class="small-btn" id="getLocationBtn">📡 获取当前位置</button>
+            </div>
+        </div>
+
+        <div class="setting-group">
+            <div class="setting-label"><i>⏱️</i> 时间文字 (可完全自定义)</div>
+            <div class="double-row">
+                <input type="text" id="timeInput" placeholder="日期时间" value="2025 · 初春午后">
+                <button class="small-btn" id="getCurrentTimeBtn">🕒 此刻时间</button>
+            </div>
+        </div>
+
+        <div class="setting-group">
+            <div class="setting-label"><i>🎨</i> 水印样式</div>
+            <div class="double-row">
+                <select id="positionSelect">
+                    <option value="bottom-left">左下 ↙️</option>
+                    <option value="bottom-right" selected>右下 ↘️</option>
+                    <option value="top-left">左上 ↖️</option>
+                    <option value="top-right">右上 ↗️</option>
+                </select>
+                <div class="color-row">
+                    <input type="color" id="watermarkColor" value="#FFFFFF">
+                    <span style="font-size:0.75rem;">文字颜色</span>
+                </div>
+            </div>
+            <div class="inline-badge" style="margin-top: 10px;">
+                <span style="font-size:0.8rem;">✏️ 字体大小</span>
+                <span><input type="range" id="fontSizeRange" min="16" max="56" value="28" step="1"> <span id="fontSizeVal" class="range-value">28px</span></span>
+            </div>
+            <div class="inline-badge" style="margin-top: 8px;">
+                <span style="font-size:0.8rem;">💧 文字阴影/背景效果</span>
+                <label style="display: flex; gap: 12px;">
+                    <span><input type="checkbox" id="shadowToggle" checked> 阴影增强</span>
+                </label>
+            </div>
+        </div>
+
+        <div class="action-row" style="padding: 8px 0 0 0;">
+            <button class="btn btn-primary" id="refreshWatermarkBtn">✨ 生成 / 更新水印</button>
+            <button class="btn btn-outline" id="downloadBtn">⬇️ 保存图片</button>
+        </div>
+        <div class="footer-note">
+            💡 提示: 位置、时间完全自定义，可任意编辑文本。点击「生成」即可合成高清水印照片。
+        </div>
+    </div>
+</div>
+
+<script>
+    (function() {
+        // ----- DOM 元素 -----
+        const outputImg = document.getElementById('outputImage');     // 显示最终带水印的图片
+        const locationInput = document.getElementById('locationInput');
+        const timeInput = document.getElementById('timeInput');
+        const positionSelect = document.getElementById('positionSelect');
+        const watermarkColorPicker = document.getElementById('watermarkColor');
+        const fontSizeRange = document.getElementById('fontSizeRange');
+        const fontSizeVal = document.getElementById('fontSizeVal');
+        const shadowToggle = document.getElementById('shadowToggle');
+        const refreshBtn = document.getElementById('refreshWatermarkBtn');
+        const downloadBtn = document.getElementById('downloadBtn');
+        const photoBtn = document.getElementById('photoBtn');
+        const galleryBtn = document.getElementById('galleryBtn');
+        const getLocationBtn = document.getElementById('getLocationBtn');
+        const getCurrentTimeBtn = document.getElementById('getCurrentTimeBtn');
+
+        // 全局存储原始图片资源 (HTMLImageElement)
+        let originalImage = null;
+        // 存储图片的原始宽高，用于canvas绘制
+        let imgNaturalWidth = 0, imgNaturalHeight = 0;
+
+        // 初始化占位文字提示 (无图片时)
+        function setPlaceholder() {
+            if (!originalImage) {
+                outputImg.src = "";
+                outputImg.alt = "请先拍照或选择图片";
+                // 展示一个美观提示
+                const resultDiv = document.querySelector('.watermark-result');
+                if(!outputImg.src) {
+                    outputImg.style.display = 'block';
+                    outputImg.src = "data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='300' height='300' viewBox='0 0 24 24' fill='none' stroke='%23aaa' stroke-width='0.5'%3E%3Crect width='100%25' height='100%25' fill='%23111122'/%3E%3Ctext x='50%25' y='50%25' dominant-baseline='middle' text-anchor='middle' fill='%23888' font-size='14'%3E📷 暂无图片%3C/text%3E%3C/svg%3E";
+                }
+            }
+        }
+
+        // 绘制带水印的图片 (核心合成)
+        async function drawWatermark() {
+            if (!originalImage) {
+                // 没有图片时提示需要选图
+                outputImg.src = "data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='400' height='300' viewBox='0 0 400 300'%3E%3Crect width='100%25' height='100%25' fill='%23222233'/%3E%3Ctext x='50%25' y='50%25' fill='%23aaa' font-size='14' text-anchor='middle' dy='.3em'%3E请先拍照或选择照片%3C/text%3E%3C/svg%3E";
+                return;
+            }
+
+            // 保证图片已经加载完成
+            if (!originalImage.complete || originalImage.naturalWidth === 0) {
+                // 等待加载
+                await new Promise((resolve) => {
+                    if (originalImage.complete && originalImage.naturalWidth > 0) resolve();
+                    else {
+                        originalImage.onload = resolve;
+                        originalImage.onerror = () => resolve(); // 错误也继续
+                    }
+                });
+            }
+            
+            const width = originalImage.naturalWidth;
+            const height = originalImage.naturalHeight;
+            if (width === 0 || height === 0) return;
+
+            // 创建canvas并设置为图片原始尺寸
+            const canvas = document.createElement('canvas');
+            canvas.width = width;
+            canvas.height = height;
+            const ctx = canvas.getContext('2d');
+
+            // 1. 绘制原始图片
+            ctx.drawImage(originalImage, 0, 0, width, height);
+            
+            // 2. 获取水印参数
+            let locationText = locationInput.value.trim();
+            let timeText = timeInput.value.trim();
+            if (locationText === "") locationText = "未知地点";
+            if (timeText === "") timeText = "未知时间";
+            
+            const fontSize = parseInt(fontSizeRange.value, 10);
+            const fontColor = watermarkColorPicker.value;
+            const shadowEnabled = shadowToggle.checked;
+            const position = positionSelect.value;
+            
+            // 设置字体 (支持多平台)
+            const fontFamily = "system-ui, 'PingFang SC', 'Microsoft YaHei', 'Segoe UI', sans-serif";
+            ctx.font = `500 ${fontSize}px ${fontFamily}`;
+            
+            // 组合两行文本: 第一行位置，第二行时间，增加个性图标(可选小emoji)
+            const line1 = `📍 ${locationText}`;
+            const line2 = `⏱️ ${timeText}`;
+            
+            // 测量文本宽度
+            const metrics1 = ctx.measureText(line1);
+            const metrics2 = ctx.measureText(line2);
+            const textWidth = Math.max(metrics1.width, metrics2.width);
+            const lineHeight = fontSize * 1.35;  // 行间距
+            const totalHeight = lineHeight * 2 + 8;
+            
+            // 边缘留白(相对边距)
+            const padding = Math.max(15, fontSize * 0.6);
+            
+            let baseX, baseY;   // 第一行基准坐标 (左下角即绘制起点)
+            // 根据位置计算坐标
+            switch(position) {
+                case 'top-left':
+                    baseX = padding;
+                    baseY = padding + fontSize * 0.85;
+                    break;
+                case 'top-right':
+                    baseX = width - textWidth - padding;
+                    baseY = padding + fontSize * 0.85;
+                    break;
+                case 'bottom-left':
+                    baseX = padding;
+                    baseY = height - totalHeight + fontSize * 0.85;
+                    break;
+                case 'bottom-right':
+                default:
+                    baseX = width - textWidth - padding;
+                    baseY = height - totalHeight + fontSize * 0.85;
+                    break;
+            }
+            
+            // 确保边界溢出修正 (防止超出画布)
+            baseX = Math.min(Math.max(baseX, padding), width - textWidth - 5);
+            baseY = Math.min(Math.max(baseY, fontSize + 5), height - totalHeight + fontSize*0.8);
+            
+            // 绘制阴影 (可选)
+            if (shadowEnabled) {
+                ctx.shadowColor = "rgba(0,0,0,0.7)";
+                ctx.shadowBlur = 8;
+                ctx.shadowOffsetX = 2;
+                ctx.shadowOffsetY = 2;
+            } else {
+                ctx.shadowColor = "transparent";
+                ctx.shadowBlur = 0;
+            }
+            
+            // 绘制半透明背景底纹，增强可读性 (类似水印相机的黑底半透)
+            const bgPadding = 8;
+            const bgWidth = textWidth + bgPadding * 1.8;
+            const bgHeight = totalHeight + bgPadding;
+            let bgX, bgY;
+            if (position === 'bottom-right' || position === 'top-right') {
+                bgX = baseX - bgPadding/1.5;
+            } else {
+                bgX = baseX - bgPadding/1.5;
+            }
+            if (position === 'bottom-left' || position === 'bottom-right') {
+                bgY = baseY - fontSize * 0.85 - bgPadding/1.2;
+            } else {
+                bgY = baseY - fontSize * 0.85 - bgPadding/1.2;
+            }
+            // 确保background不超边界
+            if (bgX < 0) bgX = 5;
+            if (bgY < 0) bgY = 5;
+            if (bgX + bgWidth > width) bgX = width - bgWidth - 5;
+            if (bgY + bgHeight > height) bgY = height - bgHeight - 5;
+            
+            ctx.save();
+            // 绘制背景圆角矩形
+            ctx.shadowBlur = 0;      // 背景自身轻微阴影已在外部?单独管理
+            ctx.shadowColor = "transparent";
+            ctx.globalAlpha = 0.65;
+            ctx.fillStyle = "#000000";
+            ctx.beginPath();
+            const radius = 16;
+            ctx.roundRect(bgX, bgY, bgWidth, bgHeight, radius);
+            ctx.fill();
+            ctx.globalAlpha = 1.0;
+            
+            // 绘制文字 (带阴影增强时启用)
+            if (shadowEnabled) {
+                ctx.shadowColor = "rgba(0,0,0,0.6)";
+                ctx.shadowBlur = 6;
+                ctx.shadowOffsetX = 1;
+                ctx.shadowOffsetY = 1;
+            } else {
+                ctx.shadowColor = "transparent";
+            }
+            ctx.fillStyle = fontColor;
+            ctx.font = `500 ${fontSize}px ${fontFamily}`;
+            
+            // 绘制两行文本
+            ctx.fillText(line1, baseX, baseY);
+            ctx.fillText(line2, baseX, baseY + lineHeight);
+            
+            ctx.restore();
+            
+            // 额外绘制细微描边让文字更清晰 (可选，不加描边防止臃肿，但好在水印鲜明)
+            // 为了边缘锐利，再薄薄叠加一层轮廓 (简单可靠)
+            ctx.save();
+            ctx.shadowColor = "transparent";
+            ctx.font = `500 ${fontSize}px ${fontFamily}`;
+            ctx.lineWidth = 1.2;
+            ctx.strokeStyle = "rgba(0,0,0,0.3)";
+            ctx.strokeText(line1, baseX, baseY);
+            ctx.strokeText(line2, baseX, baseY + lineHeight);
+            ctx.fillStyle = fontColor;
+            ctx.fillText(line1, baseX, baseY);
+            ctx.fillText(line2, baseX, baseY + lineHeight);
+            ctx.restore();
+            
+            // 将canvas转换为图片并展示
+            const dataURL = canvas.toDataURL('image/png');
+            outputImg.src = dataURL;
+            return dataURL;
+        }
+        
+        // 工具：Canvas roundRect
+        if (!CanvasRenderingContext2D.prototype.roundRect) {
+            CanvasRenderingContext2D.prototype.roundRect = function(x, y, w, h, r) {
+                if (w < 2 * r) r = w / 2;
+                if (h < 2 * r) r = h / 2;
+                this.moveTo(x+r, y);
+                this.lineTo(x+w-r, y);
+                this.quadraticCurveTo(x+w, y, x+w, y+r);
+                this.lineTo(x+w, y+h-r);
+                this.quadraticCurveTo(x+w, y+h, x+w-r, y+h);
+                this.lineTo(x+r, y+h);
+                this.quadraticCurveTo(x, y+h, x, y+h-r);
+                this.lineTo(x, y+r);
+                this.quadraticCurveTo(x, y, x+r, y);
+                return this;
+            };
+        }
+        
+        // 加载图片文件 (核心)
+        function loadImageFromFile(file) {
+            if (!file) return;
+            // 检查是否为图片
+            if (!file.type.startsWith('image/')) {
+                alert("请选择图片文件");
+                return;
+            }
+            const reader = new FileReader();
+            reader.onload = (e) => {
+                const img = new Image();
+                img.onload = () => {
+                    originalImage = img;
+                    imgNaturalWidth = img.width;
+                    imgNaturalHeight = img.height;
+                    drawWatermark().catch(e => console.warn);
+                };
+                img.src = e.target.result;
+            };
+            reader.readAsDataURL(file);
+        }
+        
+        // 拍照或相册通用 input 处理
+        function createFileInput(accept, capture) {
+            const input = document.createElement('input');
+            input.type = 'file';
+            input.accept = accept;
+            if (capture) input.capture = capture;
+            input.onchange = (e) => {
+                if (e.target.files && e.target.files[0]) {
+                    loadImageFromFile(e.target.files[0]);
+                }
+                input.remove();
+            };
+            input.click();
+        }
+        
+        // 拍照
+        photoBtn.addEventListener('click', () => {
+            createFileInput('image/*', 'environment');
+        });
+        
+        // 相册
+        galleryBtn.addEventListener('click', () => {
+            createFileInput('image/*', false);
+        });
+        
+        // 刷新水印 (重绘)
+        refreshBtn.addEventListener('click', () => {
+            if (!originalImage) {
+                alert("请先选择一张照片");
+                return;
+            }
+            drawWatermark();
+        });
+        
+        // 下载图片
+        downloadBtn.addEventListener('click', () => {
+            if (!originalImage) {
+                alert("还没有图片，请先拍照或选择图片");
+                return;
+            }
+            const currentSrc = outputImg.src;
+            if (!currentSrc || currentSrc.includes("暂无图片")) {
+                alert("请先生成带水印的图片");
+                return;
+            }
+            const link = document.createElement('a');
+            link.download = `watermark_${Date.now()}.png`;
+            link.href = currentSrc;
+            link.click();
+        });
+        
+        // ---- 位置自定义: 获取地理位置并填充到输入框 (自动更新位置文本，GPS坐标转描述) ----
+        getLocationBtn.addEventListener('click', () => {
+            if (!navigator.geolocation) {
+                alert("浏览器不支持获取地理位置");
+                return;
+            }
+            navigator.geolocation.getCurrentPosition(async (position) => {
+                const lat = position.coords.latitude.toFixed(6);
+                const lng = position.coords.longitude.toFixed(6);
+                // 默认填入坐标+尝试反向地理编码 (免费 Nominatim，稳定轻量)
+                let locationStr = `${lat}, ${lng}`;
+                // 可选: 调用 reverse geocoding 提升体验，但不阻塞自定义 (完全自定义允许用户修改)
+                try {
+                    // 使用 OpenStreetMap Nominatim 反向地理编码 (公共API, 需遵守礼貌使用)
+                    const response = await fetch(`https://nominatim.openstreetmap.org/reverse?format=json&lat=${lat}&lon=${lng}&zoom=18&addressdetails=1`, {
+                        headers: { 'Accept-Language': 'zh-CN' }
+                    });
+                    if (response.ok) {
+                        const data = await response.json();
+                        if (data && data.display_name) {
+                            // 截取简洁地址
+                            let addr = data.display_name.split(',')[0] + ',' + data.display_name.split(',')[1];
+                            if (addr.length > 45) addr = addr.substring(0, 42) + '...';
+                            locationStr = addr;
+                        } else {
+                            locationStr = `经纬度: ${lat},${lng}`;
+                        }
+                    } else {
+                        locationStr = `经纬度: ${lat},${lng}`;
+                    }
+                } catch(e) {
+                    locationStr = `经纬度: ${lat},${lng}`;
+                }
+                locationInput.value = locationStr;
+                // 如果已有图片，自动刷新水印，方便预览
+                if (originalImage) drawWatermark();
+            }, (err) => {
+                alert("获取位置失败: " + err.message + "，可以手动输入");
+            }, { enableHighAccuracy: true, timeout: 8000 });
+        });
+        
+        // 时间自定义: 填充当前精确时间
+        getCurrentTimeBtn.addEventListener('click', () => {
+            const now = new Date();
+            const formatted = `${now.getFullYear()}.${String(now.getMonth()+1).padStart(2,'0')}.${String(now.getDate()).padStart(2,'0')}  ${String(now.getHours()).padStart(2,'0')}:${String(now.getMinutes()).padStart(2,'0')}`;
+            timeInput.value = formatted;
+            if (originalImage) drawWatermark();
+        });
+        
+        // 监听水印关键设置变动，自动更新 (让体验更像水印相机实时变化)
+        const autoRefreshFields = [locationInput, timeInput, positionSelect, watermarkColorPicker, fontSizeRange, shadowToggle];
+        function autoRedraw() {
+            if (originalImage) drawWatermark();
+        }
+        autoRefreshFields.forEach(field => {
+            field.addEventListener('input', autoRedraw);
+            field.addEventListener('change', autoRedraw);
+        });
+        fontSizeRange.addEventListener('input', (e) => {
+            fontSizeVal.innerText = e.target.value + "px";
+            if (originalImage) drawWatermark();
+        });
+        
+        // 初始默认提供一张演示图片 (避免白屏, 预置示例, 但不是必须，展示功能)
+        const initDemoImage = () => {
+            const demoUrl = "data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 800 600'%3E%3Crect width='800' height='600' fill='%23336699'/%3E%3Ccircle cx='400' cy='300' r='150' fill='%23FFD166'/%3E%3Ctext x='400' y='320' font-size='40' text-anchor='middle' fill='white' font-weight='bold'%3E📸 水印相机示例%3C/text%3E%3Ctext x='400' y='400' fill='white' font-size='24' text-anchor='middle'%3E请替换为您的照片%3C/text%3E%3C/svg%3E";
+            const img = new Image();
+            img.onload = () => {
+                originalImage = img;
+                drawWatermark();
+            };
+            img.src = demoUrl;
+        };
+        initDemoImage();
+        
+        // 如果用户新选图就会替换原图, 完美运行
+    })();
+</script>
+</body>
+</html>
