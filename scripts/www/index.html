@@ -2,673 +2,700 @@
 <html lang="zh-CN">
 <head>
     <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no, viewport-fit=cover">
-    <title>水印相机 · 自定义时间位置</title>
+    <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=yes, viewport-fit=cover">
+    <title>AT2 百词竞赛 · 英语学习游戏</title>
     <style>
         * {
-            margin: 0;
-            padding: 0;
             box-sizing: border-box;
             -webkit-tap-highlight-color: transparent;
         }
 
         body {
-            background: #1a1a2e;
-            font-family: system-ui, -apple-system, 'Segoe UI', Roboto, Helvetica, Arial, sans-serif;
-            padding: 16px 12px 40px;
-            color: #eee;
-        }
-
-        /* 主容器 */
-        .app-container {
-            max-width: 550px;
-            margin: 0 auto;
-            background: #0f0f1a;
-            border-radius: 36px;
-            overflow: hidden;
-            box-shadow: 0 20px 35px -12px rgba(0, 0, 0, 0.5);
-            backdrop-filter: blur(2px);
-            border: 1px solid rgba(255, 255, 255, 0.08);
-        }
-
-        /* 头部 */
-        .header {
-            padding: 20px 20px 12px;
-            text-align: center;
-            border-bottom: 1px solid rgba(255, 255, 255, 0.1);
-            background: rgba(0, 0, 0, 0.3);
-        }
-        .header h1 {
-            font-size: 1.8rem;
-            letter-spacing: -0.5px;
-            background: linear-gradient(135deg, #FFD166, #F4A261);
-            -webkit-background-clip: text;
-            background-clip: text;
-            color: transparent;
-            font-weight: 700;
-        }
-        .header p {
-            font-size: 0.75rem;
-            opacity: 0.7;
-            margin-top: 6px;
-        }
-
-        /* 图片预览区 (水印成品) */
-        .preview-area {
-            padding: 20px;
-            background: #00000030;
-        }
-        .watermark-result {
-            background: #0a0a12;
-            border-radius: 28px;
-            overflow: hidden;
-            box-shadow: 0 8px 20px rgba(0, 0, 0, 0.4);
+            background: linear-gradient(145deg, #1e2b3c 0%, #0f1a24 100%);
+            font-family: 'Segoe UI', 'Poppins', 'Roboto', system-ui, -apple-system, sans-serif;
+            min-height: 100vh;
             display: flex;
             justify-content: center;
             align-items: center;
-            min-height: 280px;
-            border: 1px solid rgba(255, 255, 255, 0.15);
-        }
-        #outputImage {
-            max-width: 100%;
-            max-height: 480px;
-            display: block;
-            object-fit: contain;
-            background: #222;
-            transition: 0.2s;
-        }
-        .placeholder-text {
-            text-align: center;
-            color: #aaa;
-            padding: 60px 20px;
-            font-size: 0.9rem;
+            padding: 12px;
+            margin: 0;
         }
 
-        /* 按钮组 */
-        .action-row {
-            display: flex;
-            gap: 12px;
-            padding: 8px 20px 16px;
-            flex-wrap: wrap;
-        }
-        .btn {
-            flex: 1;
-            background: #2c2c3a;
-            border: none;
-            padding: 12px 0;
-            border-radius: 60px;
-            color: white;
-            font-weight: 600;
-            font-size: 0.9rem;
-            display: flex;
-            align-items: center;
-            justify-content: center;
-            gap: 8px;
-            backdrop-filter: blur(4px);
-            transition: all 0.2s ease;
-            cursor: pointer;
-            box-shadow: 0 2px 6px rgba(0,0,0,0.2);
-        }
-        .btn-primary {
-            background: #F4A261;
-            color: #1e1e2a;
-            font-weight: 700;
-        }
-        .btn-primary:active { background: #e76f51; transform: scale(0.97);}
-        .btn-outline {
-            background: rgba(255,255,240,0.08);
-            border: 1px solid #F4A26180;
-        }
-        .btn:active { transform: scale(0.97); opacity: 0.9;}
-        .icon { font-size: 1.2rem; }
-
-        /* 自定义编辑卡 */
-        .settings-card {
-            background: #14141fcc;
-            backdrop-filter: blur(8px);
-            margin: 8px 16px 20px;
-            border-radius: 32px;
-            padding: 18px 18px 22px;
-            border: 1px solid rgba(255, 255, 255, 0.08);
-        }
-        .setting-group {
-            margin-bottom: 20px;
-        }
-        .setting-label {
-            display: flex;
-            align-items: center;
-            gap: 8px;
-            font-size: 0.85rem;
-            font-weight: 500;
-            margin-bottom: 8px;
-            letter-spacing: 0.5px;
-            color: #ddd;
-        }
-        .setting-label i { font-size: 1.1rem; }
-        input, select, .color-input {
+        /* 主游戏面板 - 移动优先 */
+        .game-container {
+            max-width: 650px;
             width: 100%;
-            padding: 12px 14px;
-            background: #1c1c2a;
-            border: 1px solid #333345;
-            border-radius: 24px;
-            color: #fff;
+            background: rgba(255, 255, 240, 0.96);
+            border-radius: 48px 32px 48px 32px;
+            box-shadow: 0 20px 35px rgba(0, 0, 0, 0.3), inset 0 1px 2px rgba(255, 255, 255, 0.6);
+            overflow: hidden;
+            backdrop-filter: blur(2px);
+        }
+
+        /* 模式选项卡 - 移动端触摸优化 */
+        .mode-tabs {
+            display: flex;
+            background: #2c3e2f;
+            gap: 6px;
+            padding: 10px 16px 0 16px;
+        }
+
+        .mode-btn {
+            flex: 1;
+            background: #3e5a42;
+            border: none;
+            padding: 12px 6px;
             font-size: 0.9rem;
-            outline: none;
+            font-weight: bold;
+            color: #e9f5e1;
+            border-radius: 32px 32px 18px 18px;
+            cursor: pointer;
             transition: 0.2s;
+            letter-spacing: 0.5px;
+            box-shadow: inset 0 -2px 0 #1e2a1c;
+            touch-action: manipulation;
         }
-        input:focus, select:focus {
-            border-color: #F4A261;
-            box-shadow: 0 0 0 2px #f4a26130;
+
+        .mode-btn.active {
+            background: #ffcd7e;
+            color: #2d3e2a;
+            box-shadow: 0 4px 10px rgba(0,0,0,0.2);
+            border-bottom: 3px solid #f5a623;
         }
-        .double-row {
+
+        .panel {
+            padding: 20px 18px 32px;
+            display: none;
+            animation: fadeIn 0.25s ease;
+        }
+
+        .panel.active-panel {
+            display: block;
+        }
+
+        @keyframes fadeIn {
+            from { opacity: 0; transform: translateY(8px);}
+            to { opacity: 1; transform: translateY(0);}
+        }
+
+        /* 卡片样式 */
+        .quiz-card {
+            background: #fffef7;
+            border-radius: 40px;
+            padding: 20px 16px;
+            box-shadow: 0 10px 20px rgba(0,0,0,0.08);
+            margin-bottom: 12px;
+            text-align: center;
+        }
+
+        .question-text {
+            font-size: 1.7rem;
+            font-weight: 700;
+            color: #1e3c2c;
+            margin: 12px 0;
+            word-break: break-word;
+        }
+
+        .hint-area {
+            background: #eef4e0;
+            padding: 14px;
+            border-radius: 48px;
+            font-family: monospace;
+            font-size: 1.4rem;
+            letter-spacing: 3px;
+            margin: 12px 0;
+            color: #2b4b1e;
+            font-weight: bold;
+            overflow-x: auto;
+            white-space: pre-wrap;
+            word-break: break-all;
+        }
+
+        .input-group {
             display: flex;
             gap: 12px;
             flex-wrap: wrap;
+            justify-content: center;
+            margin: 18px 0;
         }
-        .double-row > * {
-            flex: 1;
-        }
-        .color-row {
-            display: flex;
-            align-items: center;
-            gap: 12px;
-        }
-        #watermarkColor {
-            width: 50px;
-            height: 45px;
-            border-radius: 30px;
-            border: 2px solid white;
+
+        input {
+            flex: 3;
+            min-width: 160px;
+            padding: 14px 18px;
+            font-size: 1rem;
+            border: 2px solid #cbd5b5;
+            border-radius: 60px;
+            outline: none;
             background: white;
+            font-weight: 500;
+            width: 100%;
+        }
+
+        input:focus {
+            border-color: #f5a623;
+            box-shadow: 0 0 0 3px rgba(245,166,35,0.2);
+        }
+
+        button {
+            background: #ffb347;
+            border: none;
+            padding: 12px 20px;
+            border-radius: 50px;
+            font-weight: bold;
+            font-size: 1rem;
             cursor: pointer;
+            transition: 0.2s;
+            color: #2c2c2c;
+            box-shadow: 0 3px 6px rgba(0,0,0,0.1);
+            touch-action: manipulation;
         }
-        .range-value {
-            display: inline-block;
-            background: #252536;
-            padding: 4px 12px;
-            border-radius: 30px;
-            font-size: 0.8rem;
-            margin-left: 8px;
+
+        button.primary {
+            background: #3f8f5e;
+            color: white;
+            box-shadow: 0 4px 0 #1e562e;
         }
-        .inline-badge {
+
+        button.secondary {
+            background: #6c757d;
+            color: white;
+        }
+
+        button:active {
+            transform: translateY(2px);
+        }
+
+        /* 选项网格 - 移动端两列自适应 */
+        .options-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(160px, 1fr));
+            gap: 14px;
+            margin: 24px 0;
+        }
+
+        .option-btn {
+            background: #f0f2ea;
+            padding: 14px 8px;
+            border-radius: 60px;
+            font-size: 1rem;
+            font-weight: 500;
+            border: 1px solid #cfdfb9;
+            transition: all 0.15s;
+            text-align: center;
+            touch-action: manipulation;
+        }
+
+        .option-btn:active {
+            background: #ffe1a0;
+            transform: scale(0.97);
+        }
+
+        .feedback {
+            background: #e9ecef;
+            border-radius: 40px;
+            padding: 12px;
+            margin-top: 18px;
+            font-size: 0.95rem;
+            font-weight: 500;
+        }
+
+        .score-progress {
             display: flex;
             justify-content: space-between;
-            align-items: center;
+            align-items: baseline;
+            background: #d9e3c6;
+            padding: 10px 18px;
+            border-radius: 40px;
+            margin-bottom: 20px;
+            font-weight: bold;
+            flex-wrap: wrap;
+            gap: 8px;
         }
-        button.small-btn {
-            background: #2c2c42;
-            padding: 8px 14px;
-            border-radius: 30px;
-            font-size: 0.75rem;
-            border: none;
-            color: #FFD966;
-            cursor: pointer;
+
+        .restart-btn {
+            background: #1e6f5c;
+            color: white;
+            margin-top: 8px;
+            padding: 10px 20px;
         }
-        hr {
-            border-color: #2a2a3a;
-            margin: 16px 0;
-        }
-        .footer-note {
-            font-size: 0.7rem;
-            text-align: center;
-            opacity: 0.6;
-            padding: 12px;
-        }
+
+        /* 手机小屏优化 */
         @media (max-width: 480px) {
-            .btn { font-size: 0.8rem; padding: 10px 0;}
-            .settings-card { padding: 14px; }
+            .game-container {
+                border-radius: 36px 24px 36px 24px;
+            }
+            .quiz-card {
+                padding: 18px 12px;
+            }
+            .question-text {
+                font-size: 1.4rem;
+            }
+            .hint-area {
+                font-size: 1.2rem;
+                letter-spacing: 2px;
+                padding: 10px;
+            }
+            .mode-btn {
+                font-size: 0.8rem;
+                padding: 10px 4px;
+            }
+            .options-grid {
+                grid-template-columns: 1fr;  /* 手机窄屏单列更好点选 */
+                gap: 12px;
+            }
+            .option-btn {
+                padding: 12px;
+            }
+            button, .restart-btn {
+                padding: 10px 18px;
+                font-size: 0.9rem;
+            }
+            input {
+                padding: 12px 16px;
+                font-size: 0.95rem;
+            }
         }
     </style>
 </head>
 <body>
-
-<div class="app-container">
-    <div class="header">
-        <h1>📸 水印相机 · PRO</h1>
-        <p>自定义位置｜自定义时间｜专属水印</p>
+<div class="game-container" id="gameApp">
+    <div class="mode-tabs">
+        <button class="mode-btn" data-mode="mode1">✍️ 拼写填空</button>
+        <button class="mode-btn" data-mode="mode2">📖 释义选择</button>
+        <button class="mode-btn" data-mode="race">🏆 百词竞赛</button>
     </div>
 
-    <!-- 水印成品展示区 -->
-    <div class="preview-area">
-        <div class="watermark-result">
-            <img id="outputImage" src="" alt="带水印图片" style="width:100%;">
+    <!-- 模式一：根据中文填写单词（含部分字母提示） -->
+    <div id="mode1Panel" class="panel">
+        <div class="quiz-card">
+            <div class="score-progress" style="justify-content: center;">📘 练习模式 · 随机出题</div>
+            <div id="mode1Meaning" class="question-text">🍎 苹果</div>
+            <div id="mode1HintBox" class="hint-area">_ _ _ _ _</div>
+            <div class="input-group">
+                <input type="text" id="mode1Input" placeholder="输入完整单词 (小写)" autocomplete="off" enterkeyhint="done">
+                <button id="mode1CheckBtn" class="primary">✓ 核对</button>
+                <button id="mode1NextBtn">⏩ 下一词</button>
+            </div>
+            <div id="mode1Feedback" class="feedback">✨ 根据中文和提示字母，填写完整单词~</div>
         </div>
     </div>
 
-    <!-- 图片获取按钮组：拍照 / 相册 -->
-    <div class="action-row">
-        <button class="btn" id="photoBtn">📷 拍照</button>
-        <button class="btn" id="galleryBtn">🖼️ 相册选择</button>
+    <!-- 模式二：根据单词选择中文释义 (优化后: 正确/错误均延时1秒下一题) -->
+    <div id="mode2Panel" class="panel">
+        <div class="quiz-card">
+            <div class="score-progress" style="justify-content: center;">🔤 选择正确的释义</div>
+            <div id="mode2Word" class="question-text">cheap</div>
+            <div id="mode2Options" class="options-grid"></div>
+            <div id="mode2Feedback" class="feedback">✅ 点击选项，自动跳转下一题</div>
+        </div>
     </div>
 
-    <!-- 水印自定义核心区域 -->
-    <div class="settings-card">
-        <div class="setting-group">
-            <div class="setting-label"><i>📍</i> 位置文字 (可完全自定义)</div>
-            <div class="double-row">
-                <input type="text" id="locationInput" placeholder="输入地点，如: 西湖·断桥残雪" value="杭州 · 西湖景区">
-                <button class="small-btn" id="getLocationBtn">📡 获取当前位置</button>
+    <!-- 竞赛模块：随机100词，题型随机 -->
+    <div id="racePanel" class="panel">
+        <div class="quiz-card">
+            <div class="score-progress">
+                <span>🏅 得分: <span id="raceScore">0</span></span>
+                <span>📊 进度: <span id="raceCurrent">0</span> / <span id="raceTotal">100</span></span>
             </div>
-        </div>
-
-        <div class="setting-group">
-            <div class="setting-label"><i>⏱️</i> 时间文字 (可完全自定义)</div>
-            <div class="double-row">
-                <input type="text" id="timeInput" placeholder="日期时间" value="2025 · 初春午后">
-                <button class="small-btn" id="getCurrentTimeBtn">🕒 此刻时间</button>
+            <div id="raceQuestionArea"></div>
+            <div id="raceNextArea" style="text-align: center; margin-top: 15px;">
+                <button id="raceSubmitBtn" class="primary" style="display: none;">提交答案</button>
+                <button id="raceRestartBtn" class="restart-btn">🔄 重新竞赛</button>
             </div>
-        </div>
-
-        <div class="setting-group">
-            <div class="setting-label"><i>🎨</i> 水印样式</div>
-            <div class="double-row">
-                <select id="positionSelect">
-                    <option value="bottom-left">左下 ↙️</option>
-                    <option value="bottom-right" selected>右下 ↘️</option>
-                    <option value="top-left">左上 ↖️</option>
-                    <option value="top-right">右上 ↗️</option>
-                </select>
-                <div class="color-row">
-                    <input type="color" id="watermarkColor" value="#FFFFFF">
-                    <span style="font-size:0.75rem;">文字颜色</span>
-                </div>
-            </div>
-            <div class="inline-badge" style="margin-top: 10px;">
-                <span style="font-size:0.8rem;">✏️ 字体大小</span>
-                <span><input type="range" id="fontSizeRange" min="16" max="56" value="28" step="1"> <span id="fontSizeVal" class="range-value">28px</span></span>
-            </div>
-            <div class="inline-badge" style="margin-top: 8px;">
-                <span style="font-size:0.8rem;">💧 文字阴影/背景效果</span>
-                <label style="display: flex; gap: 12px;">
-                    <span><input type="checkbox" id="shadowToggle" checked> 阴影增强</span>
-                </label>
-            </div>
-        </div>
-
-        <div class="action-row" style="padding: 8px 0 0 0;">
-            <button class="btn btn-primary" id="refreshWatermarkBtn">✨ 生成 / 更新水印</button>
-            <button class="btn btn-outline" id="downloadBtn">⬇️ 保存图片</button>
-        </div>
-        <div class="footer-note">
-            💡 提示: 位置、时间完全自定义，可任意编辑文本。点击「生成」即可合成高清水印照片。
+            <div id="raceFinalMsg" style="margin-top: 15px; font-weight: bold; text-align: center;"></div>
         </div>
     </div>
 </div>
 
 <script>
-    (function() {
-        // ----- DOM 元素 -----
-        const outputImg = document.getElementById('outputImage');     // 显示最终带水印的图片
-        const locationInput = document.getElementById('locationInput');
-        const timeInput = document.getElementById('timeInput');
-        const positionSelect = document.getElementById('positionSelect');
-        const watermarkColorPicker = document.getElementById('watermarkColor');
-        const fontSizeRange = document.getElementById('fontSizeRange');
-        const fontSizeVal = document.getElementById('fontSizeVal');
-        const shadowToggle = document.getElementById('shadowToggle');
-        const refreshBtn = document.getElementById('refreshWatermarkBtn');
-        const downloadBtn = document.getElementById('downloadBtn');
-        const photoBtn = document.getElementById('photoBtn');
-        const galleryBtn = document.getElementById('galleryBtn');
-        const getLocationBtn = document.getElementById('getLocationBtn');
-        const getCurrentTimeBtn = document.getElementById('getCurrentTimeBtn');
-
-        // 全局存储原始图片资源 (HTMLImageElement)
-        let originalImage = null;
-        // 存储图片的原始宽高，用于canvas绘制
-        let imgNaturalWidth = 0, imgNaturalHeight = 0;
-
-        // 初始化占位文字提示 (无图片时)
-        function setPlaceholder() {
-            if (!originalImage) {
-                outputImg.src = "";
-                outputImg.alt = "请先拍照或选择图片";
-                // 展示一个美观提示
-                const resultDiv = document.querySelector('.watermark-result');
-                if(!outputImg.src) {
-                    outputImg.style.display = 'block';
-                    outputImg.src = "data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='300' height='300' viewBox='0 0 24 24' fill='none' stroke='%23aaa' stroke-width='0.5'%3E%3Crect width='100%25' height='100%25' fill='%23111122'/%3E%3Ctext x='50%25' y='50%25' dominant-baseline='middle' text-anchor='middle' fill='%23888' font-size='14'%3E📷 暂无图片%3C/text%3E%3C/svg%3E";
-                }
-            }
+    // --------------------------------------------------------------
+    // 单词库 (基于百词竞赛内容，所有单词小写存储)
+    // --------------------------------------------------------------
+    const wordsData = [
+        { word: "cheap", meaning: "便宜的" },{ word: "weigh", meaning: "称重量;重达" },{ word: "musician", meaning: "音乐家" },
+        { word: "race", meaning: "种族;比赛" },{ word: "neighborhood", meaning: "社区;邻近地区" },{ word: "rainbow", meaning: "彩虹" },
+        { word: "lose weight", meaning: "减肥" },{ word: "shy", meaning: "害羞的" },{ word: "zebra", meaning: "斑马" },
+        { word: "pass by", meaning: "走过;逝去" },{ word: "save", meaning: "救;节约;储蓄" },{ word: "pilot", meaning: "领航员" },
+        { word: "weather", meaning: "天气" },{ word: "large", meaning: "大的;广阔的" },{ word: "subway", meaning: "地铁" },
+        { word: "similar", meaning: "相似的" },{ word: "muscle", meaning: "肌肉" },{ word: "success", meaning: "成功" },
+        { word: "plant", meaning: "植物" },{ word: "temperature", meaning: "温度" },{ word: "kill", meaning: "杀死" },
+        { word: "upside-down", meaning: "颠倒的;乱七八糟" },{ word: "shine", meaning: "发光;照耀" },{ word: "ready", meaning: "准备好的" },
+        { word: "again", meaning: "再次" },{ word: "university", meaning: "大学" },{ word: "screen", meaning: "屏幕;筛选" },
+        { word: "nervous", meaning: "紧张的;焦虑的" },{ word: "responsible", meaning: "负责的;有责任" },{ word: "luckily", meaning: "幸运地;幸亏" },
+        { word: "nightmare", meaning: "噩梦" },{ word: "organization", meaning: "机构;组织" },{ word: "noisy", meaning: "嘈杂的" },
+        { word: "safe", meaning: "安全的" },{ word: "male", meaning: "男的;男性" },{ word: "mirror", meaning: "镜子" },
+        { word: "introduce", meaning: "介绍;引进" },{ word: "welcome", meaning: "欢迎" },{ word: "lake", meaning: "湖泊" },
+        { word: "trunk", meaning: "树干" },{ word: "millionaire", meaning: "百万富翁" },{ word: "selfish", meaning: "自私的" },
+        { word: "push", meaning: "推;推动" },{ word: "leader", meaning: "领导者" },{ word: "pasta", meaning: "意大利面食" },
+        { word: "librarian", meaning: "图书管理员" },{ word: "interest", meaning: "使感兴趣" },{ word: "vitamin", meaning: "维生素" },
+        { word: "include", meaning: "包括;包含" },{ word: "messy", meaning: "棘手的;难办的" },{ word: "worried", meaning: "担心的" },
+        { word: "record", meaning: "录音;记录" },{ word: "natural habitat", meaning: "自然生境" },{ word: "reason", meaning: "理由;推理" },
+        { word: "update", meaning: "更新" },{ word: "message", meaning: "消息;信息" },{ word: "rude", meaning: "粗鲁的" },
+        { word: "plastic", meaning: "塑料" },{ word: "talent", meaning: "天才;天赋" },{ word: "list", meaning: "列表;清单" },
+        { word: "warning", meaning: "警告" },{ word: "lazy", meaning: "懒惰的" },{ word: "modern", meaning: "现代的" },
+        { word: "performer", meaning: "表演者" },{ word: "speed", meaning: "速度;加速" },{ word: "shelf", meaning: "架子" },
+        { word: "technology", meaning: "技术" },{ word: "tomorrow", meaning: "明天" },{ word: "peppers", meaning: "甜椒" },
+        { word: "share", meaning: "分享;共有" },{ word: "important", meaning: "重要的" },{ word: "minute", meaning: "分钟;微小的" },
+        { word: "remember", meaning: "记得" },{ word: "energy", meaning: "能源;能量" },{ word: "end", meaning: "结束;终点" },
+        { word: "however", meaning: "然而" },{ word: "difficult", meaning: "困难的" },{ word: "cereal", meaning: "谷类" },
+        { word: "illness", meaning: "疾病" },{ word: "idea", meaning: "主意;想法" },{ word: "calcium", meaning: "钙" },
+        { word: "fresh", meaning: "新鲜的" },{ word: "beef", meaning: "牛肉" },{ word: "cotton", meaning: "棉;棉花" },
+        { word: "billion", meaning: "十亿" },{ word: "avoid", meaning: "避免" },{ word: "firefighter", meaning: "消防队员" },
+        { word: "far", meaning: "远的" },{ word: "adopt", meaning: "采用;收养" },{ word: "bookcase", meaning: "书架" },
+        { word: "build", meaning: "建造" },{ word: "heavy", meaning: "重的;繁重的" },{ word: "another", meaning: "另一个" },
+        { word: "dry", meaning: "干的;使变干" },{ word: "destroy", meaning: "摧毁" },{ word: "director", meaning: "指挥;导演" },
+        { word: "builder", meaning: "建造者" },{ word: "funny", meaning: "有趣的" },{ word: "character", meaning: "人物;角色" },
+        { word: "explain", meaning: "解释" },{ word: "arrive", meaning: "到达" },{ word: "criminal", meaning: "罪犯" },
+        { word: "design", meaning: "设计" },{ word: "alone", meaning: "单独的" },{ word: "adventure", meaning: "冒险" },
+        { word: "brain", meaning: "大脑" },{ word: "contact", meaning: "联络" },{ word: "camera", meaning: "照相机" },
+        { word: "elephant", meaning: "象" },{ word: "gorilla", meaning: "大猩猩" },{ word: "carpet", meaning: "地毯" },
+        { word: "armchair", meaning: "扶手椅" },{ word: "future", meaning: "未来" },{ word: "helicopter", meaning: "直升飞机" },
+        { word: "dentist", meaning: "牙科医生" },{ word: "celebrate", meaning: "庆祝" },{ word: "hold", meaning: "握住;拿住" },
+        { word: "hunter", meaning: "猎人" },{ word: "allowance", meaning: "津贴;零花钱" },{ word: "costume", meaning: "服装;戏装" },
+        { word: "female", meaning: "女的;女性" },{ word: "band", meaning: "乐队" },{ word: "forever", meaning: "永远" },
+        { word: "friendly", meaning: "友好的" },{ word: "horn", meaning: "号角;喇叭" },{ word: "comeback", meaning: "东山再起" },
+        { word: "find", meaning: "发现;找到" },{ word: "even if", meaning: "即使;纵然" },{ word: "busy", meaning: "忙碌的" },
+        { word: "cleaner", meaning: "清洁工人" },{ word: "decide", meaning: "决定" },{ word: "earth", meaning: "地球;土地" },
+        { word: "area", meaning: "区域;面积" },{ word: "collect", meaning: "收集" },{ word: "experience", meaning: "经验;经历" },
+        { word: "closet", meaning: "衣橱" },{ word: "award", meaning: "奖;奖品" },{ word: "dangerous", meaning: "危险的" },
+        { word: "climb", meaning: "攀爬" },{ word: "expensive", meaning: "昂贵的" },{ word: "ceremony", meaning: "典礼" },
+        { word: "button", meaning: "扣子;纽扣" },{ word: "communicate", meaning: "交流" },{ word: "clothes", meaning: "衣服" },
+        { word: "hard-working", meaning: "工作努力的" },{ word: "disappear", meaning: "消失" },{ word: "calm down", meaning: "平静下来" },
+        { word: "go on a diet", meaning: "节食" },{ word: "change", meaning: "改变" },{ word: "hiking", meaning: "远足;徒步旅行" }
+    ];
+    
+    const fullVocabulary = [...wordsData];
+    
+    // ---------- 辅助函数：生成部分字母提示（全小写展示）----------
+    function generatePartialHint(word, revealCount = 3) {
+        let wordStr = word.toLowerCase();
+        let letters = wordStr.split('');
+        let positions = [];
+        for (let i = 0; i < letters.length; i++) {
+            if (letters[i].match(/[a-z]/i)) positions.push(i);
         }
-
-        // 绘制带水印的图片 (核心合成)
-        async function drawWatermark() {
-            if (!originalImage) {
-                // 没有图片时提示需要选图
-                outputImg.src = "data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='400' height='300' viewBox='0 0 400 300'%3E%3Crect width='100%25' height='100%25' fill='%23222233'/%3E%3Ctext x='50%25' y='50%25' fill='%23aaa' font-size='14' text-anchor='middle' dy='.3em'%3E请先拍照或选择照片%3C/text%3E%3C/svg%3E";
-                return;
-            }
-
-            // 保证图片已经加载完成
-            if (!originalImage.complete || originalImage.naturalWidth === 0) {
-                // 等待加载
-                await new Promise((resolve) => {
-                    if (originalImage.complete && originalImage.naturalWidth > 0) resolve();
-                    else {
-                        originalImage.onload = resolve;
-                        originalImage.onerror = () => resolve(); // 错误也继续
-                    }
-                });
-            }
-            
-            const width = originalImage.naturalWidth;
-            const height = originalImage.naturalHeight;
-            if (width === 0 || height === 0) return;
-
-            // 创建canvas并设置为图片原始尺寸
-            const canvas = document.createElement('canvas');
-            canvas.width = width;
-            canvas.height = height;
-            const ctx = canvas.getContext('2d');
-
-            // 1. 绘制原始图片
-            ctx.drawImage(originalImage, 0, 0, width, height);
-            
-            // 2. 获取水印参数
-            let locationText = locationInput.value.trim();
-            let timeText = timeInput.value.trim();
-            if (locationText === "") locationText = "未知地点";
-            if (timeText === "") timeText = "未知时间";
-            
-            const fontSize = parseInt(fontSizeRange.value, 10);
-            const fontColor = watermarkColorPicker.value;
-            const shadowEnabled = shadowToggle.checked;
-            const position = positionSelect.value;
-            
-            // 设置字体 (支持多平台)
-            const fontFamily = "system-ui, 'PingFang SC', 'Microsoft YaHei', 'Segoe UI', sans-serif";
-            ctx.font = `500 ${fontSize}px ${fontFamily}`;
-            
-            // 组合两行文本: 第一行位置，第二行时间，增加个性图标(可选小emoji)
-            const line1 = `📍 ${locationText}`;
-            const line2 = `⏱️ ${timeText}`;
-            
-            // 测量文本宽度
-            const metrics1 = ctx.measureText(line1);
-            const metrics2 = ctx.measureText(line2);
-            const textWidth = Math.max(metrics1.width, metrics2.width);
-            const lineHeight = fontSize * 1.35;  // 行间距
-            const totalHeight = lineHeight * 2 + 8;
-            
-            // 边缘留白(相对边距)
-            const padding = Math.max(15, fontSize * 0.6);
-            
-            let baseX, baseY;   // 第一行基准坐标 (左下角即绘制起点)
-            // 根据位置计算坐标
-            switch(position) {
-                case 'top-left':
-                    baseX = padding;
-                    baseY = padding + fontSize * 0.85;
-                    break;
-                case 'top-right':
-                    baseX = width - textWidth - padding;
-                    baseY = padding + fontSize * 0.85;
-                    break;
-                case 'bottom-left':
-                    baseX = padding;
-                    baseY = height - totalHeight + fontSize * 0.85;
-                    break;
-                case 'bottom-right':
-                default:
-                    baseX = width - textWidth - padding;
-                    baseY = height - totalHeight + fontSize * 0.85;
-                    break;
-            }
-            
-            // 确保边界溢出修正 (防止超出画布)
-            baseX = Math.min(Math.max(baseX, padding), width - textWidth - 5);
-            baseY = Math.min(Math.max(baseY, fontSize + 5), height - totalHeight + fontSize*0.8);
-            
-            // 绘制阴影 (可选)
-            if (shadowEnabled) {
-                ctx.shadowColor = "rgba(0,0,0,0.7)";
-                ctx.shadowBlur = 8;
-                ctx.shadowOffsetX = 2;
-                ctx.shadowOffsetY = 2;
+        let shuffled = [...positions];
+        for (let i = shuffled.length - 1; i > 0; i--) {
+            const j = Math.floor(Math.random() * (i + 1));
+            [shuffled[i], shuffled[j]] = [shuffled[j], shuffled[i]];
+        }
+        let revealedSet = new Set(shuffled.slice(0, Math.min(revealCount, positions.length, Math.ceil(letters.length * 0.4))));
+        let hintChars = [];
+        for (let i = 0; i < letters.length; i++) {
+            let ch = letters[i];
+            if (ch.match(/[a-z]/i) && revealedSet.has(i)) {
+                hintChars.push(ch.toLowerCase());
+            } else if (ch.match(/[a-z]/i)) {
+                hintChars.push('_');
             } else {
-                ctx.shadowColor = "transparent";
-                ctx.shadowBlur = 0;
+                hintChars.push(ch);
             }
-            
-            // 绘制半透明背景底纹，增强可读性 (类似水印相机的黑底半透)
-            const bgPadding = 8;
-            const bgWidth = textWidth + bgPadding * 1.8;
-            const bgHeight = totalHeight + bgPadding;
-            let bgX, bgY;
-            if (position === 'bottom-right' || position === 'top-right') {
-                bgX = baseX - bgPadding/1.5;
-            } else {
-                bgX = baseX - bgPadding/1.5;
-            }
-            if (position === 'bottom-left' || position === 'bottom-right') {
-                bgY = baseY - fontSize * 0.85 - bgPadding/1.2;
-            } else {
-                bgY = baseY - fontSize * 0.85 - bgPadding/1.2;
-            }
-            // 确保background不超边界
-            if (bgX < 0) bgX = 5;
-            if (bgY < 0) bgY = 5;
-            if (bgX + bgWidth > width) bgX = width - bgWidth - 5;
-            if (bgY + bgHeight > height) bgY = height - bgHeight - 5;
-            
-            ctx.save();
-            // 绘制背景圆角矩形
-            ctx.shadowBlur = 0;      // 背景自身轻微阴影已在外部?单独管理
-            ctx.shadowColor = "transparent";
-            ctx.globalAlpha = 0.65;
-            ctx.fillStyle = "#000000";
-            ctx.beginPath();
-            const radius = 16;
-            ctx.roundRect(bgX, bgY, bgWidth, bgHeight, radius);
-            ctx.fill();
-            ctx.globalAlpha = 1.0;
-            
-            // 绘制文字 (带阴影增强时启用)
-            if (shadowEnabled) {
-                ctx.shadowColor = "rgba(0,0,0,0.6)";
-                ctx.shadowBlur = 6;
-                ctx.shadowOffsetX = 1;
-                ctx.shadowOffsetY = 1;
-            } else {
-                ctx.shadowColor = "transparent";
-            }
-            ctx.fillStyle = fontColor;
-            ctx.font = `500 ${fontSize}px ${fontFamily}`;
-            
-            // 绘制两行文本
-            ctx.fillText(line1, baseX, baseY);
-            ctx.fillText(line2, baseX, baseY + lineHeight);
-            
-            ctx.restore();
-            
-            // 额外绘制细微描边让文字更清晰 (可选，不加描边防止臃肿，但好在水印鲜明)
-            // 为了边缘锐利，再薄薄叠加一层轮廓 (简单可靠)
-            ctx.save();
-            ctx.shadowColor = "transparent";
-            ctx.font = `500 ${fontSize}px ${fontFamily}`;
-            ctx.lineWidth = 1.2;
-            ctx.strokeStyle = "rgba(0,0,0,0.3)";
-            ctx.strokeText(line1, baseX, baseY);
-            ctx.strokeText(line2, baseX, baseY + lineHeight);
-            ctx.fillStyle = fontColor;
-            ctx.fillText(line1, baseX, baseY);
-            ctx.fillText(line2, baseX, baseY + lineHeight);
-            ctx.restore();
-            
-            // 将canvas转换为图片并展示
-            const dataURL = canvas.toDataURL('image/png');
-            outputImg.src = dataURL;
-            return dataURL;
         }
-        
-        // 工具：Canvas roundRect
-        if (!CanvasRenderingContext2D.prototype.roundRect) {
-            CanvasRenderingContext2D.prototype.roundRect = function(x, y, w, h, r) {
-                if (w < 2 * r) r = w / 2;
-                if (h < 2 * r) r = h / 2;
-                this.moveTo(x+r, y);
-                this.lineTo(x+w-r, y);
-                this.quadraticCurveTo(x+w, y, x+w, y+r);
-                this.lineTo(x+w, y+h-r);
-                this.quadraticCurveTo(x+w, y+h, x+w-r, y+h);
-                this.lineTo(x+r, y+h);
-                this.quadraticCurveTo(x, y+h, x, y+h-r);
-                this.lineTo(x, y+r);
-                this.quadraticCurveTo(x, y, x+r, y);
-                return this;
-            };
+        return hintChars.join('');
+    }
+    
+    // ---------- 模式一 ----------
+    const mode1Meaning = document.getElementById('mode1Meaning');
+    const mode1HintBox = document.getElementById('mode1HintBox');
+    const mode1Input = document.getElementById('mode1Input');
+    const mode1CheckBtn = document.getElementById('mode1CheckBtn');
+    const mode1NextBtn = document.getElementById('mode1NextBtn');
+    const mode1Feedback = document.getElementById('mode1Feedback');
+    let currentMode1WordObj = null;
+    
+    function refreshMode1() {
+        currentMode1WordObj = getRandomWordForMode1();
+        mode1Meaning.innerText = currentMode1WordObj.meaning;
+        const rawWord = currentMode1WordObj.word.toLowerCase();
+        const hintStr = generatePartialHint(rawWord, 3);
+        mode1HintBox.innerText = `✨ 提示: ${hintStr}   (长度 ${rawWord.length})`;
+        mode1Input.value = '';
+        mode1Feedback.innerHTML = '💡 根据释义和提示字母，填写完整单词～';
+    }
+    
+    function getRandomWordForMode1() {
+        const randomIndex = Math.floor(Math.random() * fullVocabulary.length);
+        return { ...fullVocabulary[randomIndex] };
+    }
+    
+    function checkMode1() {
+        if (!currentMode1WordObj) return;
+        const userAns = mode1Input.value.trim().toLowerCase();
+        if (userAns === "") {
+            mode1Feedback.innerHTML = "⚠️ 请输入单词后再核对！";
+            return;
         }
-        
-        // 加载图片文件 (核心)
-        function loadImageFromFile(file) {
-            if (!file) return;
-            // 检查是否为图片
-            if (!file.type.startsWith('image/')) {
-                alert("请选择图片文件");
-                return;
-            }
-            const reader = new FileReader();
-            reader.onload = (e) => {
-                const img = new Image();
-                img.onload = () => {
-                    originalImage = img;
-                    imgNaturalWidth = img.width;
-                    imgNaturalHeight = img.height;
-                    drawWatermark().catch(e => console.warn);
-                };
-                img.src = e.target.result;
-            };
-            reader.readAsDataURL(file);
+        const correctWord = currentMode1WordObj.word.toLowerCase();
+        const isOk = userAns === correctWord;
+        if (isOk) {
+            mode1Feedback.innerHTML = `✅ 完美！ “${correctWord}” 正确！ 🎉`;
+        } else {
+            mode1Feedback.innerHTML = `❌ 错误！ 正确答案是 “${correctWord}” 。继续努力～`;
         }
-        
-        // 拍照或相册通用 input 处理
-        function createFileInput(accept, capture) {
-            const input = document.createElement('input');
-            input.type = 'file';
-            input.accept = accept;
-            if (capture) input.capture = capture;
-            input.onchange = (e) => {
-                if (e.target.files && e.target.files[0]) {
-                    loadImageFromFile(e.target.files[0]);
-                }
-                input.remove();
-            };
-            input.click();
+    }
+    mode1CheckBtn.addEventListener('click', checkMode1);
+    mode1NextBtn.addEventListener('click', () => { refreshMode1(); });
+    
+    // ---------- 模式二 (延时1秒自动下一题，正确/错误均如此) ----------
+    const mode2WordDiv = document.getElementById('mode2Word');
+    const mode2OptionsDiv = document.getElementById('mode2Options');
+    const mode2FeedbackSpan = document.getElementById('mode2Feedback');
+    let currentMode2WordObj = null;
+    let isMode2Waiting = false;
+    let mode2Timeout = null;
+    
+    function getRandomOptions(correctMeaning, bank) {
+        let candidates = bank.filter(item => item.meaning !== correctMeaning).map(item => item.meaning);
+        candidates = [...new Set(candidates)];
+        if (candidates.length < 3) {
+            const fallbacks = ["美丽的", "快速的", "聪明的", "巨大的", "明亮的", "温柔的"];
+            for (let fb of fallbacks) if (!candidates.includes(fb)) candidates.push(fb);
         }
-        
-        // 拍照
-        photoBtn.addEventListener('click', () => {
-            createFileInput('image/*', 'environment');
-        });
-        
-        // 相册
-        galleryBtn.addEventListener('click', () => {
-            createFileInput('image/*', false);
-        });
-        
-        // 刷新水印 (重绘)
-        refreshBtn.addEventListener('click', () => {
-            if (!originalImage) {
-                alert("请先选择一张照片");
-                return;
-            }
-            drawWatermark();
-        });
-        
-        // 下载图片
-        downloadBtn.addEventListener('click', () => {
-            if (!originalImage) {
-                alert("还没有图片，请先拍照或选择图片");
-                return;
-            }
-            const currentSrc = outputImg.src;
-            if (!currentSrc || currentSrc.includes("暂无图片")) {
-                alert("请先生成带水印的图片");
-                return;
-            }
-            const link = document.createElement('a');
-            link.download = `watermark_${Date.now()}.png`;
-            link.href = currentSrc;
-            link.click();
-        });
-        
-        // ---- 位置自定义: 获取地理位置并填充到输入框 (自动更新位置文本，GPS坐标转描述) ----
-        getLocationBtn.addEventListener('click', () => {
-            if (!navigator.geolocation) {
-                alert("浏览器不支持获取地理位置");
-                return;
-            }
-            navigator.geolocation.getCurrentPosition(async (position) => {
-                const lat = position.coords.latitude.toFixed(6);
-                const lng = position.coords.longitude.toFixed(6);
-                // 默认填入坐标+尝试反向地理编码 (免费 Nominatim，稳定轻量)
-                let locationStr = `${lat}, ${lng}`;
-                // 可选: 调用 reverse geocoding 提升体验，但不阻塞自定义 (完全自定义允许用户修改)
-                try {
-                    // 使用 OpenStreetMap Nominatim 反向地理编码 (公共API, 需遵守礼貌使用)
-                    const response = await fetch(`https://nominatim.openstreetmap.org/reverse?format=json&lat=${lat}&lon=${lng}&zoom=18&addressdetails=1`, {
-                        headers: { 'Accept-Language': 'zh-CN' }
-                    });
-                    if (response.ok) {
-                        const data = await response.json();
-                        if (data && data.display_name) {
-                            // 截取简洁地址
-                            let addr = data.display_name.split(',')[0] + ',' + data.display_name.split(',')[1];
-                            if (addr.length > 45) addr = addr.substring(0, 42) + '...';
-                            locationStr = addr;
-                        } else {
-                            locationStr = `经纬度: ${lat},${lng}`;
-                        }
-                    } else {
-                        locationStr = `经纬度: ${lat},${lng}`;
-                    }
-                } catch(e) {
-                    locationStr = `经纬度: ${lat},${lng}`;
-                }
-                locationInput.value = locationStr;
-                // 如果已有图片，自动刷新水印，方便预览
-                if (originalImage) drawWatermark();
-            }, (err) => {
-                alert("获取位置失败: " + err.message + "，可以手动输入");
-            }, { enableHighAccuracy: true, timeout: 8000 });
-        });
-        
-        // 时间自定义: 填充当前精确时间
-        getCurrentTimeBtn.addEventListener('click', () => {
-            const now = new Date();
-            const formatted = `${now.getFullYear()}.${String(now.getMonth()+1).padStart(2,'0')}.${String(now.getDate()).padStart(2,'0')}  ${String(now.getHours()).padStart(2,'0')}:${String(now.getMinutes()).padStart(2,'0')}`;
-            timeInput.value = formatted;
-            if (originalImage) drawWatermark();
-        });
-        
-        // 监听水印关键设置变动，自动更新 (让体验更像水印相机实时变化)
-        const autoRefreshFields = [locationInput, timeInput, positionSelect, watermarkColorPicker, fontSizeRange, shadowToggle];
-        function autoRedraw() {
-            if (originalImage) drawWatermark();
+        let shuffled = [...candidates].sort(() => 0.5 - Math.random());
+        let opts = shuffled.slice(0, 3);
+        opts.push(correctMeaning);
+        for (let i = opts.length - 1; i > 0; i--) {
+            const j = Math.floor(Math.random() * (i + 1));
+            [opts[i], opts[j]] = [opts[j], opts[i]];
         }
-        autoRefreshFields.forEach(field => {
-            field.addEventListener('input', autoRedraw);
-            field.addEventListener('change', autoRedraw);
+        return opts;
+    }
+    
+    function loadMode2Question() {
+        if (mode2Timeout) clearTimeout(mode2Timeout);
+        if (isMode2Waiting) return;
+        const randomIndex = Math.floor(Math.random() * fullVocabulary.length);
+        currentMode2WordObj = { ...fullVocabulary[randomIndex] };
+        mode2WordDiv.innerText = currentMode2WordObj.word.toLowerCase();
+        const options = getRandomOptions(currentMode2WordObj.meaning, fullVocabulary);
+        mode2OptionsDiv.innerHTML = '';
+        options.forEach(opt => {
+            const btn = document.createElement('button');
+            btn.className = 'option-btn';
+            btn.innerText = opt;
+            btn.addEventListener('click', () => handleMode2Answer(opt, currentMode2WordObj.meaning));
+            mode2OptionsDiv.appendChild(btn);
         });
-        fontSizeRange.addEventListener('input', (e) => {
-            fontSizeVal.innerText = e.target.value + "px";
-            if (originalImage) drawWatermark();
+        mode2FeedbackSpan.innerHTML = "🔍 请选择一个最符合的释义～";
+        isMode2Waiting = false;
+    }
+    
+    function handleMode2Answer(selectedMeaning, correctMeaning) {
+        if (isMode2Waiting) return;
+        const isCorrect = (selectedMeaning === correctMeaning);
+        if (isCorrect) {
+            mode2FeedbackSpan.innerHTML = `🎉 正确! “${currentMode2WordObj.word.toLowerCase()}” 释义正确！ 1秒后下一题~`;
+        } else {
+            mode2FeedbackSpan.innerHTML = `❌ 错误! “${currentMode2WordObj.word.toLowerCase()}” 的正确释义是 “${correctMeaning}” 。1秒后下一题~`;
+        }
+        isMode2Waiting = true;
+        // 延时1秒后加载新题目 (符合正确后1秒下一题的要求)
+        mode2Timeout = setTimeout(() => {
+            loadMode2Question();
+            mode2Timeout = null;
+        }, 1000);
+    }
+    
+    // ---------- 竞赛模块 (保留完整功能) ----------
+    class RaceManager {
+        constructor(wordBank, totalCount = 100) {
+            this.wordBank = [...wordBank];
+            this.total = Math.min(totalCount, this.wordBank.length);
+            this.questions = [];
+            this.currentIndex = 0;
+            this.score = 0;
+            this.answered = false;
+            this.initQuestions();
+        }
+        initQuestions() {
+            const shuffledBank = [...this.wordBank];
+            for (let i = shuffledBank.length - 1; i > 0; i--) {
+                const j = Math.floor(Math.random() * (i + 1));
+                [shuffledBank[i], shuffledBank[j]] = [shuffledBank[j], shuffledBank[i]];
+            }
+            const selectedWords = shuffledBank.slice(0, this.total);
+            for (let wordObj of selectedWords) {
+                const type = Math.random() < 0.5 ? 'spell' : 'choice';
+                this.questions.push({ wordObj, type });
+            }
+        }
+        getCurrentQuestion() {
+            if (this.currentIndex < this.questions.length) return this.questions[this.currentIndex];
+            return null;
+        }
+        submitSpellAnswer(userAnswer, correctWord) {
+            const normalize = (s) => s.trim().toLowerCase().replace(/\s+/g, ' ').replace(/[^\w\s-]/g, '');
+            const correctNorm = normalize(correctWord);
+            const userNorm = normalize(userAnswer);
+            const isCorrect = userNorm === correctNorm;
+            if (isCorrect) this.score++;
+            this.answered = true;
+            return { isCorrect, correctAnswer: correctWord };
+        }
+        submitChoiceAnswer(selectedMeaning, correctMeaning) {
+            const isCorrect = selectedMeaning === correctMeaning;
+            if (isCorrect) this.score++;
+            this.answered = true;
+            return { isCorrect };
+        }
+        next() {
+            if (this.currentIndex < this.questions.length - 1) {
+                this.currentIndex++;
+                this.answered = false;
+                return true;
+            }
+            return false;
+        }
+        isFinished() {
+            return this.currentIndex >= this.questions.length;
+        }
+        getProgress() {
+            return { current: this.currentIndex + 1, total: this.questions.length, score: this.score };
+        }
+    }
+    
+    let currentRace = null;
+    const raceQuestionArea = document.getElementById('raceQuestionArea');
+    const raceScoreSpan = document.getElementById('raceScore');
+    const raceCurrentSpan = document.getElementById('raceCurrent');
+    const raceTotalSpan = document.getElementById('raceTotal');
+    const raceSubmitBtn = document.getElementById('raceSubmitBtn');
+    const raceRestartBtn = document.getElementById('raceRestartBtn');
+    const raceFinalMsgDiv = document.getElementById('raceFinalMsg');
+    let currentRaceSpellInput = null;
+    
+    function renderRaceQuestion() {
+        if (!currentRace) return;
+        const question = currentRace.getCurrentQuestion();
+        if (!question || currentRace.isFinished()) {
+            const progress = currentRace.getProgress();
+            raceFinalMsgDiv.innerHTML = `🏁 竞赛完成! 得分: ${progress.score} / ${progress.total} 🎖️ ${progress.score >= 70 ? '🏆 单词大师' : '📚 继续加油!'}`;
+            raceQuestionArea.innerHTML = `<div style="text-align:center; padding:20px;">🎉 恭喜完成百词竞赛！ 🎉<br> 最终得分: ${progress.score} / ${progress.total}</div>`;
+            raceSubmitBtn.style.display = 'none';
+            return;
+        }
+        raceFinalMsgDiv.innerHTML = '';
+        raceSubmitBtn.style.display = 'inline-block';
+        const progress = currentRace.getProgress();
+        raceScoreSpan.innerText = progress.score;
+        raceCurrentSpan.innerText = progress.current;
+        raceTotalSpan.innerText = progress.total;
+        
+        const { wordObj, type } = question;
+        if (type === 'spell') {
+            const hintDisplay = generatePartialHint(wordObj.word.toLowerCase(), 3);
+            raceQuestionArea.innerHTML = `
+                <div style="text-align:center;">
+                    <div class="question-text" style="font-size:1.4rem;">📖 中文释义:</div>
+                    <div class="question-text" style="font-size:2rem; background:#fef1cf; border-radius: 60px; padding:10px;">${wordObj.meaning}</div>
+                    <div class="hint-area">🔍 字母线索: ${hintDisplay}  (共 ${wordObj.word.length} 字符)</div>
+                    <div class="input-group" style="justify-content:center;"><input type="text" id="raceSpellInput" placeholder="输入完整单词或短语" autocomplete="off" style="flex:2;"></div>
+                </div>
+            `;
+            currentRaceSpellInput = document.getElementById('raceSpellInput');
+        } else {
+            let allMeanings = fullVocabulary.map(v => v.meaning);
+            let candidates = [...new Set(allMeanings.filter(m => m !== wordObj.meaning))].sort(() => 0.5 - Math.random()).slice(0, 3);
+            let options = [...candidates, wordObj.meaning];
+            for (let i = options.length - 1; i > 0; i--) {
+                const j = Math.floor(Math.random() * (i + 1));
+                [options[i], options[j]] = [options[j], options[i]];
+            }
+            raceQuestionArea.innerHTML = `
+                <div style="text-align:center;">
+                    <div class="question-text">🔤 单词: <strong style="background:#ffecb3; padding:6px 15px; border-radius:40px;">${wordObj.word.toLowerCase()}</strong></div>
+                    <div class="options-grid" id="raceChoiceGrid"></div>
+                </div>
+            `;
+            const grid = document.getElementById('raceChoiceGrid');
+            grid.innerHTML = '';
+            options.forEach(opt => {
+                const btn = document.createElement('button');
+                btn.className = 'option-btn';
+                btn.innerText = opt;
+                btn.addEventListener('click', () => handleRaceChoice(opt, wordObj.meaning));
+                grid.appendChild(btn);
+            });
+            currentRaceSpellInput = null;
+        }
+        // 提交按钮逻辑
+        const newSubmit = raceSubmitBtn.cloneNode(true);
+        raceSubmitBtn.parentNode.replaceChild(newSubmit, raceSubmitBtn);
+        newSubmit.addEventListener('click', () => {
+            if (!currentRace || currentRace.answered) {
+                if(currentRace && !currentRace.answered) return;
+                else { if(currentRace && currentRace.answered) raceFinalMsgDiv.innerHTML = "⚠️ 本题已完成，请继续"; return; }
+            }
+            const q = currentRace.getCurrentQuestion();
+            if (!q) return;
+            if (q.type === 'spell' && currentRaceSpellInput) {
+                const answer = currentRaceSpellInput.value;
+                const { isCorrect, correctAnswer } = currentRace.submitSpellAnswer(answer, q.wordObj.word);
+                raceFinalMsgDiv.innerHTML = isCorrect ? `✅ 正确! +1分` : `❌ 错误! 正确答案: ${correctAnswer.toLowerCase()}`;
+                goToNextRaceQuestion();
+            } else if (q.type === 'choice') {
+                raceFinalMsgDiv.innerHTML = `⚠️ 请直接点击上方选项选择答案～`;
+            }
         });
-        
-        // 初始默认提供一张演示图片 (避免白屏, 预置示例, 但不是必须，展示功能)
-        const initDemoImage = () => {
-            const demoUrl = "data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 800 600'%3E%3Crect width='800' height='600' fill='%23336699'/%3E%3Ccircle cx='400' cy='300' r='150' fill='%23FFD166'/%3E%3Ctext x='400' y='320' font-size='40' text-anchor='middle' fill='white' font-weight='bold'%3E📸 水印相机示例%3C/text%3E%3Ctext x='400' y='400' fill='white' font-size='24' text-anchor='middle'%3E请替换为您的照片%3C/text%3E%3C/svg%3E";
-            const img = new Image();
-            img.onload = () => {
-                originalImage = img;
-                drawWatermark();
-            };
-            img.src = demoUrl;
-        };
-        initDemoImage();
-        
-        // 如果用户新选图就会替换原图, 完美运行
-    })();
+    }
+    
+    function handleRaceChoice(selected, correctMeaning) {
+        if (!currentRace || currentRace.answered) return;
+        const { isCorrect } = currentRace.submitChoiceAnswer(selected, correctMeaning);
+        raceFinalMsgDiv.innerHTML = isCorrect ? `✅ 正确! +1分` : `❌ 错误! 正确答案: ${correctMeaning}`;
+        goToNextRaceQuestion();
+    }
+    
+    function goToNextRaceQuestion() {
+        if (!currentRace) return;
+        currentRace.next();
+        const progress = currentRace.getProgress();
+        raceScoreSpan.innerText = progress.score;
+        if (currentRace.isFinished()) {
+            renderRaceQuestion();
+        } else {
+            renderRaceQuestion();
+        }
+    }
+    
+    function startRace() {
+        currentRace = new RaceManager(fullVocabulary, 100);
+        renderRaceQuestion();
+    }
+    raceRestartBtn.addEventListener('click', () => startRace());
+    
+    // ---------- 模式切换 ----------
+    const modeBtns = document.querySelectorAll('.mode-btn');
+    const panels = {
+        mode1: document.getElementById('mode1Panel'),
+        mode2: document.getElementById('mode2Panel'),
+        race: document.getElementById('racePanel')
+    };
+    function switchMode(modeId) {
+        Object.keys(panels).forEach(id => panels[id].classList.remove('active-panel'));
+        panels[modeId].classList.add('active-panel');
+        modeBtns.forEach(btn => {
+            if (btn.dataset.mode === modeId) btn.classList.add('active');
+            else btn.classList.remove('active');
+        });
+        if (modeId === 'mode1') refreshMode1();
+        if (modeId === 'mode2') { 
+            if (mode2Timeout) clearTimeout(mode2Timeout);
+            isMode2Waiting = false;
+            loadMode2Question(); 
+        }
+        if (modeId === 'race' && (!currentRace || currentRace.isFinished())) startRace();
+    }
+    modeBtns.forEach(btn => {
+        btn.addEventListener('click', () => switchMode(btn.dataset.mode));
+    });
+    
+    // 初始化全部
+    refreshMode1();
+    loadMode2Question();
+    startRace();
+    switchMode('mode1');
 </script>
 </body>
 </html>
