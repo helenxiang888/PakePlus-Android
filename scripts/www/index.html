@@ -12,7 +12,7 @@
 
         body {
             background: linear-gradient(145deg, #1e2b3c 0%, #0f1a24 100%);
-            font-family: 'Segoe UI', 'Poppins', 'Roboto', system-ui, -apple-system, sans-serif;
+            font-family: system-ui, 'Segoe UI', 'Poppins', 'Roboto', sans-serif;
             min-height: 100vh;
             display: flex;
             justify-content: center;
@@ -21,7 +21,6 @@
             margin: 0;
         }
 
-        /* 主游戏面板 - 移动优先 */
         .game-container {
             max-width: 650px;
             width: 100%;
@@ -29,10 +28,8 @@
             border-radius: 48px 32px 48px 32px;
             box-shadow: 0 20px 35px rgba(0, 0, 0, 0.3), inset 0 1px 2px rgba(255, 255, 255, 0.6);
             overflow: hidden;
-            backdrop-filter: blur(2px);
         }
 
-        /* 模式选项卡 - 移动端触摸优化 */
         .mode-tabs {
             display: flex;
             background: #2c3e2f;
@@ -78,7 +75,6 @@
             to { opacity: 1; transform: translateY(0);}
         }
 
-        /* 卡片样式 */
         .quiz-card {
             background: #fffef7;
             border-radius: 40px;
@@ -157,16 +153,6 @@
             box-shadow: 0 4px 0 #1e562e;
         }
 
-        button.secondary {
-            background: #6c757d;
-            color: white;
-        }
-
-        button:active {
-            transform: translateY(2px);
-        }
-
-        /* 选项网格 - 移动端两列自适应 */
         .options-grid {
             display: grid;
             grid-template-columns: repeat(auto-fit, minmax(160px, 1fr));
@@ -220,60 +206,35 @@
             padding: 10px 20px;
         }
 
-        /* 手机小屏优化 */
         @media (max-width: 480px) {
-            .game-container {
-                border-radius: 36px 24px 36px 24px;
-            }
-            .quiz-card {
-                padding: 18px 12px;
-            }
-            .question-text {
-                font-size: 1.4rem;
-            }
-            .hint-area {
-                font-size: 1.2rem;
-                letter-spacing: 2px;
-                padding: 10px;
-            }
-            .mode-btn {
-                font-size: 0.8rem;
-                padding: 10px 4px;
-            }
-            .options-grid {
-                grid-template-columns: 1fr;  /* 手机窄屏单列更好点选 */
-                gap: 12px;
-            }
-            .option-btn {
-                padding: 12px;
-            }
-            button, .restart-btn {
-                padding: 10px 18px;
-                font-size: 0.9rem;
-            }
-            input {
-                padding: 12px 16px;
-                font-size: 0.95rem;
-            }
+            .game-container { border-radius: 36px 24px 36px 24px; }
+            .quiz-card { padding: 18px 12px; }
+            .question-text { font-size: 1.4rem; }
+            .hint-area { font-size: 1.2rem; letter-spacing: 2px; padding: 10px; }
+            .mode-btn { font-size: 0.8rem; padding: 10px 4px; }
+            .options-grid { grid-template-columns: 1fr; gap: 12px; }
+            .option-btn { padding: 12px; }
+            button, .restart-btn { padding: 10px 18px; font-size: 0.9rem; }
+            input { padding: 12px 16px; font-size: 0.95rem; }
         }
     </style>
 </head>
 <body>
-<div class="game-container" id="gameApp">
+<div class="game-container">
     <div class="mode-tabs">
         <button class="mode-btn" data-mode="mode1">✍️ 拼写填空</button>
         <button class="mode-btn" data-mode="mode2">📖 释义选择</button>
         <button class="mode-btn" data-mode="race">🏆 百词竞赛</button>
     </div>
 
-    <!-- 模式一：根据中文填写单词（含部分字母提示） -->
+    <!-- 模式一 -->
     <div id="mode1Panel" class="panel">
         <div class="quiz-card">
             <div class="score-progress" style="justify-content: center;">📘 练习模式 · 随机出题</div>
             <div id="mode1Meaning" class="question-text">🍎 苹果</div>
             <div id="mode1HintBox" class="hint-area">_ _ _ _ _</div>
             <div class="input-group">
-                <input type="text" id="mode1Input" placeholder="输入完整单词 (小写)" autocomplete="off" enterkeyhint="done">
+                <input type="text" id="mode1Input" placeholder="输入完整单词 (小写)" autocomplete="off">
                 <button id="mode1CheckBtn" class="primary">✓ 核对</button>
                 <button id="mode1NextBtn">⏩ 下一词</button>
             </div>
@@ -281,17 +242,17 @@
         </div>
     </div>
 
-    <!-- 模式二：根据单词选择中文释义 (优化后: 正确/错误均延时1秒下一题) -->
+    <!-- 模式二：释义选择（自动跳转修复版） -->
     <div id="mode2Panel" class="panel">
         <div class="quiz-card">
             <div class="score-progress" style="justify-content: center;">🔤 选择正确的释义</div>
             <div id="mode2Word" class="question-text">cheap</div>
             <div id="mode2Options" class="options-grid"></div>
-            <div id="mode2Feedback" class="feedback">✅ 点击选项，自动跳转下一题</div>
+            <div id="mode2Feedback" class="feedback">✅ 点击选项，1秒后自动进入下一题</div>
         </div>
     </div>
 
-    <!-- 竞赛模块：随机100词，题型随机 -->
+    <!-- 竞赛模块 -->
     <div id="racePanel" class="panel">
         <div class="quiz-card">
             <div class="score-progress">
@@ -303,15 +264,13 @@
                 <button id="raceSubmitBtn" class="primary" style="display: none;">提交答案</button>
                 <button id="raceRestartBtn" class="restart-btn">🔄 重新竞赛</button>
             </div>
-            <div id="raceFinalMsg" style="margin-top: 15px; font-weight: bold; text-align: center;"></div>
+            <div id="raceFinalMsg" class="feedback"></div>
         </div>
     </div>
 </div>
 
 <script>
-    // --------------------------------------------------------------
-    // 单词库 (基于百词竞赛内容，所有单词小写存储)
-    // --------------------------------------------------------------
+    // ---------- 单词库 (全部小写) ----------
     const wordsData = [
         { word: "cheap", meaning: "便宜的" },{ word: "weigh", meaning: "称重量;重达" },{ word: "musician", meaning: "音乐家" },
         { word: "race", meaning: "种族;比赛" },{ word: "neighborhood", meaning: "社区;邻近地区" },{ word: "rainbow", meaning: "彩虹" },
@@ -364,95 +323,72 @@
         { word: "hard-working", meaning: "工作努力的" },{ word: "disappear", meaning: "消失" },{ word: "calm down", meaning: "平静下来" },
         { word: "go on a diet", meaning: "节食" },{ word: "change", meaning: "改变" },{ word: "hiking", meaning: "远足;徒步旅行" }
     ];
-    
-    const fullVocabulary = [...wordsData];
-    
-    // ---------- 辅助函数：生成部分字母提示（全小写展示）----------
+    const fullVocab = [...wordsData];
+
+    // 辅助: 生成部分字母提示
     function generatePartialHint(word, revealCount = 3) {
-        let wordStr = word.toLowerCase();
-        let letters = wordStr.split('');
+        let w = word.toLowerCase();
+        let letters = w.split('');
         let positions = [];
-        for (let i = 0; i < letters.length; i++) {
-            if (letters[i].match(/[a-z]/i)) positions.push(i);
-        }
+        for (let i = 0; i < letters.length; i++) if (letters[i].match(/[a-z]/)) positions.push(i);
         let shuffled = [...positions];
         for (let i = shuffled.length - 1; i > 0; i--) {
             const j = Math.floor(Math.random() * (i + 1));
             [shuffled[i], shuffled[j]] = [shuffled[j], shuffled[i]];
         }
-        let revealedSet = new Set(shuffled.slice(0, Math.min(revealCount, positions.length, Math.ceil(letters.length * 0.4))));
-        let hintChars = [];
+        let revealed = new Set(shuffled.slice(0, Math.min(revealCount, positions.length, Math.ceil(w.length * 0.4))));
+        let hint = [];
         for (let i = 0; i < letters.length; i++) {
             let ch = letters[i];
-            if (ch.match(/[a-z]/i) && revealedSet.has(i)) {
-                hintChars.push(ch.toLowerCase());
-            } else if (ch.match(/[a-z]/i)) {
-                hintChars.push('_');
-            } else {
-                hintChars.push(ch);
-            }
+            if (ch.match(/[a-z]/) && revealed.has(i)) hint.push(ch);
+            else if (ch.match(/[a-z]/)) hint.push('_');
+            else hint.push(ch);
         }
-        return hintChars.join('');
+        return hint.join('');
     }
-    
-    // ---------- 模式一 ----------
+
+    // ================= 模式一 =================
     const mode1Meaning = document.getElementById('mode1Meaning');
     const mode1HintBox = document.getElementById('mode1HintBox');
     const mode1Input = document.getElementById('mode1Input');
     const mode1CheckBtn = document.getElementById('mode1CheckBtn');
     const mode1NextBtn = document.getElementById('mode1NextBtn');
     const mode1Feedback = document.getElementById('mode1Feedback');
-    let currentMode1WordObj = null;
-    
+    let currentMode1 = null;
+
+    function randomWord() { return fullVocab[Math.floor(Math.random() * fullVocab.length)]; }
     function refreshMode1() {
-        currentMode1WordObj = getRandomWordForMode1();
-        mode1Meaning.innerText = currentMode1WordObj.meaning;
-        const rawWord = currentMode1WordObj.word.toLowerCase();
-        const hintStr = generatePartialHint(rawWord, 3);
-        mode1HintBox.innerText = `✨ 提示: ${hintStr}   (长度 ${rawWord.length})`;
+        currentMode1 = randomWord();
+        mode1Meaning.innerText = currentMode1.meaning;
+        const raw = currentMode1.word.toLowerCase();
+        mode1HintBox.innerText = `✨ 提示: ${generatePartialHint(raw, 3)}  (长度 ${raw.length})`;
         mode1Input.value = '';
-        mode1Feedback.innerHTML = '💡 根据释义和提示字母，填写完整单词～';
+        mode1Feedback.innerHTML = '💡 根据释义和提示填写完整单词～';
     }
-    
-    function getRandomWordForMode1() {
-        const randomIndex = Math.floor(Math.random() * fullVocabulary.length);
-        return { ...fullVocabulary[randomIndex] };
-    }
-    
     function checkMode1() {
-        if (!currentMode1WordObj) return;
-        const userAns = mode1Input.value.trim().toLowerCase();
-        if (userAns === "") {
-            mode1Feedback.innerHTML = "⚠️ 请输入单词后再核对！";
-            return;
-        }
-        const correctWord = currentMode1WordObj.word.toLowerCase();
-        const isOk = userAns === correctWord;
-        if (isOk) {
-            mode1Feedback.innerHTML = `✅ 完美！ “${correctWord}” 正确！ 🎉`;
-        } else {
-            mode1Feedback.innerHTML = `❌ 错误！ 正确答案是 “${correctWord}” 。继续努力～`;
-        }
+        if (!currentMode1) return;
+        const user = mode1Input.value.trim().toLowerCase();
+        if (!user) { mode1Feedback.innerHTML = "⚠️ 请输入单词"; return; }
+        const correct = currentMode1.word.toLowerCase();
+        if (user === correct) mode1Feedback.innerHTML = `✅ 完美！ “${correct}” 正确！ 🎉`;
+        else mode1Feedback.innerHTML = `❌ 错误！ 正确答案是 “${correct}”。继续努力～`;
     }
-    mode1CheckBtn.addEventListener('click', checkMode1);
-    mode1NextBtn.addEventListener('click', () => { refreshMode1(); });
-    
-    // ---------- 模式二 (延时1秒自动下一题，正确/错误均如此) ----------
-    const mode2WordDiv = document.getElementById('mode2Word');
-    const mode2OptionsDiv = document.getElementById('mode2Options');
-    const mode2FeedbackSpan = document.getElementById('mode2Feedback');
-    let currentMode2WordObj = null;
-    let isMode2Waiting = false;
-    let mode2Timeout = null;
-    
-    function getRandomOptions(correctMeaning, bank) {
-        let candidates = bank.filter(item => item.meaning !== correctMeaning).map(item => item.meaning);
-        candidates = [...new Set(candidates)];
-        if (candidates.length < 3) {
-            const fallbacks = ["美丽的", "快速的", "聪明的", "巨大的", "明亮的", "温柔的"];
-            for (let fb of fallbacks) if (!candidates.includes(fb)) candidates.push(fb);
-        }
-        let shuffled = [...candidates].sort(() => 0.5 - Math.random());
+    mode1CheckBtn.onclick = checkMode1;
+    mode1NextBtn.onclick = refreshMode1;
+
+    // ================= 模式二 (自动跳转，已修复) =================
+    const mode2Word = document.getElementById('mode2Word');
+    const mode2Options = document.getElementById('mode2Options');
+    const mode2Feedback = document.getElementById('mode2Feedback');
+    let currentMode2 = null;
+    let mode2Timer = null;
+    let waitingForNext = false;   // 防连点 & 跳转保护
+
+    function getRandomOptions(correctMeaning) {
+        let others = fullVocab.filter(item => item.meaning !== correctMeaning).map(item => item.meaning);
+        others = [...new Set(others)];
+        while (others.length < 3) others.push("美丽的", "快速的", "聪明的", "巨大的");
+        let shuffled = [...others].sort(() => 0.5 - Math.random());
         let opts = shuffled.slice(0, 3);
         opts.push(correctMeaning);
         for (let i = opts.length - 1; i > 0; i--) {
@@ -461,241 +397,205 @@
         }
         return opts;
     }
-    
-    function loadMode2Question() {
-        if (mode2Timeout) clearTimeout(mode2Timeout);
-        if (isMode2Waiting) return;
-        const randomIndex = Math.floor(Math.random() * fullVocabulary.length);
-        currentMode2WordObj = { ...fullVocabulary[randomIndex] };
-        mode2WordDiv.innerText = currentMode2WordObj.word.toLowerCase();
-        const options = getRandomOptions(currentMode2WordObj.meaning, fullVocabulary);
-        mode2OptionsDiv.innerHTML = '';
-        options.forEach(opt => {
+
+    function loadMode2() {
+        if (mode2Timer) clearTimeout(mode2Timer);
+        waitingForNext = false;
+        currentMode2 = randomWord();
+        mode2Word.innerText = currentMode2.word.toLowerCase();
+        const opts = getRandomOptions(currentMode2.meaning);
+        mode2Options.innerHTML = '';
+        opts.forEach(opt => {
             const btn = document.createElement('button');
             btn.className = 'option-btn';
             btn.innerText = opt;
-            btn.addEventListener('click', () => handleMode2Answer(opt, currentMode2WordObj.meaning));
-            mode2OptionsDiv.appendChild(btn);
+            btn.onclick = () => {
+                if (waitingForNext) return;   // 已经在等待下一题
+                waitingForNext = true;
+                const isCorrect = (opt === currentMode2.meaning);
+                if (isCorrect) {
+                    mode2Feedback.innerHTML = `🎉 正确！ “${currentMode2.word.toLowerCase()}” 释义正确！ 1秒后下一题~`;
+                } else {
+                    mode2Feedback.innerHTML = `❌ 错误！ “${currentMode2.word.toLowerCase()}” 的正确释义是 “${currentMode2.meaning}”。1秒后下一题~`;
+                }
+                // 设置定时器自动刷新
+                mode2Timer = setTimeout(() => {
+                    loadMode2();      // 加载新题目，重置 waitingForNext
+                    mode2Timer = null;
+                }, 1000);
+            };
+            mode2Options.appendChild(btn);
         });
-        mode2FeedbackSpan.innerHTML = "🔍 请选择一个最符合的释义～";
-        isMode2Waiting = false;
+        mode2Feedback.innerHTML = "🔍 请选择最符合的释义，1秒后自动切换";
     }
-    
-    function handleMode2Answer(selectedMeaning, correctMeaning) {
-        if (isMode2Waiting) return;
-        const isCorrect = (selectedMeaning === correctMeaning);
-        if (isCorrect) {
-            mode2FeedbackSpan.innerHTML = `🎉 正确! “${currentMode2WordObj.word.toLowerCase()}” 释义正确！ 1秒后下一题~`;
-        } else {
-            mode2FeedbackSpan.innerHTML = `❌ 错误! “${currentMode2WordObj.word.toLowerCase()}” 的正确释义是 “${correctMeaning}” 。1秒后下一题~`;
-        }
-        isMode2Waiting = true;
-        // 延时1秒后加载新题目 (符合正确后1秒下一题的要求)
-        mode2Timeout = setTimeout(() => {
-            loadMode2Question();
-            mode2Timeout = null;
-        }, 1000);
-    }
-    
-    // ---------- 竞赛模块 (保留完整功能) ----------
-    class RaceManager {
-        constructor(wordBank, totalCount = 100) {
-            this.wordBank = [...wordBank];
-            this.total = Math.min(totalCount, this.wordBank.length);
+
+    // ================= 竞赛模块 =================
+    class Race {
+        constructor(bank, total = 100) {
+            this.bank = [...bank];
+            this.total = Math.min(total, this.bank.length);
             this.questions = [];
-            this.currentIndex = 0;
+            this.idx = 0;
             this.score = 0;
             this.answered = false;
-            this.initQuestions();
+            this.init();
         }
-        initQuestions() {
-            const shuffledBank = [...this.wordBank];
-            for (let i = shuffledBank.length - 1; i > 0; i--) {
+        init() {
+            let shuffled = [...this.bank];
+            for (let i = shuffled.length - 1; i > 0; i--) {
                 const j = Math.floor(Math.random() * (i + 1));
-                [shuffledBank[i], shuffledBank[j]] = [shuffledBank[j], shuffledBank[i]];
+                [shuffled[i], shuffled[j]] = [shuffled[j], shuffled[i]];
             }
-            const selectedWords = shuffledBank.slice(0, this.total);
-            for (let wordObj of selectedWords) {
-                const type = Math.random() < 0.5 ? 'spell' : 'choice';
-                this.questions.push({ wordObj, type });
+            let selected = shuffled.slice(0, this.total);
+            for (let w of selected) {
+                let type = Math.random() < 0.5 ? 'spell' : 'choice';
+                this.questions.push({ wordObj: w, type });
             }
         }
-        getCurrentQuestion() {
-            if (this.currentIndex < this.questions.length) return this.questions[this.currentIndex];
-            return null;
-        }
-        submitSpellAnswer(userAnswer, correctWord) {
-            const normalize = (s) => s.trim().toLowerCase().replace(/\s+/g, ' ').replace(/[^\w\s-]/g, '');
-            const correctNorm = normalize(correctWord);
-            const userNorm = normalize(userAnswer);
-            const isCorrect = userNorm === correctNorm;
-            if (isCorrect) this.score++;
+        current() { return this.idx < this.questions.length ? this.questions[this.idx] : null; }
+        submitSpell(ans, correct) {
+            let norm = s => s.trim().toLowerCase().replace(/\s+/g, ' ').replace(/[^\w\s-]/g, '');
+            let ok = norm(ans) === norm(correct);
+            if (ok) this.score++;
             this.answered = true;
-            return { isCorrect, correctAnswer: correctWord };
+            return { ok, correct };
         }
-        submitChoiceAnswer(selectedMeaning, correctMeaning) {
-            const isCorrect = selectedMeaning === correctMeaning;
-            if (isCorrect) this.score++;
+        submitChoice(sel, correct) {
+            let ok = sel === correct;
+            if (ok) this.score++;
             this.answered = true;
-            return { isCorrect };
+            return { ok };
         }
         next() {
-            if (this.currentIndex < this.questions.length - 1) {
-                this.currentIndex++;
-                this.answered = false;
-                return true;
-            }
+            if (this.idx < this.questions.length - 1) { this.idx++; this.answered = false; return true; }
             return false;
         }
-        isFinished() {
-            return this.currentIndex >= this.questions.length;
-        }
-        getProgress() {
-            return { current: this.currentIndex + 1, total: this.questions.length, score: this.score };
-        }
+        finished() { return this.idx >= this.questions.length; }
+        progress() { return { cur: this.idx + 1, total: this.questions.length, score: this.score }; }
     }
-    
-    let currentRace = null;
-    const raceQuestionArea = document.getElementById('raceQuestionArea');
-    const raceScoreSpan = document.getElementById('raceScore');
-    const raceCurrentSpan = document.getElementById('raceCurrent');
-    const raceTotalSpan = document.getElementById('raceTotal');
-    const raceSubmitBtn = document.getElementById('raceSubmitBtn');
-    const raceRestartBtn = document.getElementById('raceRestartBtn');
-    const raceFinalMsgDiv = document.getElementById('raceFinalMsg');
-    let currentRaceSpellInput = null;
-    
-    function renderRaceQuestion() {
-        if (!currentRace) return;
-        const question = currentRace.getCurrentQuestion();
-        if (!question || currentRace.isFinished()) {
-            const progress = currentRace.getProgress();
-            raceFinalMsgDiv.innerHTML = `🏁 竞赛完成! 得分: ${progress.score} / ${progress.total} 🎖️ ${progress.score >= 70 ? '🏆 单词大师' : '📚 继续加油!'}`;
-            raceQuestionArea.innerHTML = `<div style="text-align:center; padding:20px;">🎉 恭喜完成百词竞赛！ 🎉<br> 最终得分: ${progress.score} / ${progress.total}</div>`;
-            raceSubmitBtn.style.display = 'none';
+
+    let race = null;
+    const raceArea = document.getElementById('raceQuestionArea');
+    const raceScore = document.getElementById('raceScore');
+    const raceCur = document.getElementById('raceCurrent');
+    const raceTotal = document.getElementById('raceTotal');
+    const raceSubmit = document.getElementById('raceSubmitBtn');
+    const raceRestart = document.getElementById('raceRestartBtn');
+    const raceFinal = document.getElementById('raceFinalMsg');
+    let spellInput = null;
+
+    function renderRace() {
+        if (!race || race.finished()) {
+            let p = race ? race.progress() : { score: 0, total: 100 };
+            raceFinal.innerHTML = `🏁 竞赛完成! 得分: ${p.score} / ${p.total} 🎖️ ${p.score >= 70 ? '🏆 单词大师' : '📚 继续加油!'}`;
+            raceArea.innerHTML = `<div style="text-align:center;padding:20px;">🎉 恭喜完成百词竞赛！ 🎉<br> 最终得分: ${p.score} / ${p.total}</div>`;
+            raceSubmit.style.display = 'none';
             return;
         }
-        raceFinalMsgDiv.innerHTML = '';
-        raceSubmitBtn.style.display = 'inline-block';
-        const progress = currentRace.getProgress();
-        raceScoreSpan.innerText = progress.score;
-        raceCurrentSpan.innerText = progress.current;
-        raceTotalSpan.innerText = progress.total;
-        
-        const { wordObj, type } = question;
-        if (type === 'spell') {
-            const hintDisplay = generatePartialHint(wordObj.word.toLowerCase(), 3);
-            raceQuestionArea.innerHTML = `
+        raceFinal.innerHTML = '';
+        raceSubmit.style.display = 'inline-block';
+        let prog = race.progress();
+        raceScore.innerText = prog.score;
+        raceCur.innerText = prog.cur;
+        raceTotal.innerText = prog.total;
+
+        let q = race.current();
+        if (q.type === 'spell') {
+            let hint = generatePartialHint(q.wordObj.word, 3);
+            raceArea.innerHTML = `
                 <div style="text-align:center;">
                     <div class="question-text" style="font-size:1.4rem;">📖 中文释义:</div>
-                    <div class="question-text" style="font-size:2rem; background:#fef1cf; border-radius: 60px; padding:10px;">${wordObj.meaning}</div>
-                    <div class="hint-area">🔍 字母线索: ${hintDisplay}  (共 ${wordObj.word.length} 字符)</div>
-                    <div class="input-group" style="justify-content:center;"><input type="text" id="raceSpellInput" placeholder="输入完整单词或短语" autocomplete="off" style="flex:2;"></div>
+                    <div class="question-text" style="background:#fef1cf; border-radius:60px; padding:10px;">${q.wordObj.meaning}</div>
+                    <div class="hint-area">🔍 字母线索: ${hint} (共 ${q.wordObj.word.length} 字符)</div>
+                    <div class="input-group"><input type="text" id="raceSpellInput" placeholder="输入完整单词" autocomplete="off"></div>
                 </div>
             `;
-            currentRaceSpellInput = document.getElementById('raceSpellInput');
+            spellInput = document.getElementById('raceSpellInput');
         } else {
-            let allMeanings = fullVocabulary.map(v => v.meaning);
-            let candidates = [...new Set(allMeanings.filter(m => m !== wordObj.meaning))].sort(() => 0.5 - Math.random()).slice(0, 3);
-            let options = [...candidates, wordObj.meaning];
-            for (let i = options.length - 1; i > 0; i--) {
+            let others = fullVocab.map(v => v.meaning).filter(m => m !== q.wordObj.meaning);
+            let opts = [...new Set(others)].sort(() => 0.5 - Math.random()).slice(0, 3);
+            opts.push(q.wordObj.meaning);
+            for (let i = opts.length - 1; i > 0; i--) {
                 const j = Math.floor(Math.random() * (i + 1));
-                [options[i], options[j]] = [options[j], options[i]];
+                [opts[i], opts[j]] = [opts[j], opts[i]];
             }
-            raceQuestionArea.innerHTML = `
+            raceArea.innerHTML = `
                 <div style="text-align:center;">
-                    <div class="question-text">🔤 单词: <strong style="background:#ffecb3; padding:6px 15px; border-radius:40px;">${wordObj.word.toLowerCase()}</strong></div>
+                    <div class="question-text">🔤 单词: <strong style="background:#ffecb3; padding:6px 15px; border-radius:40px;">${q.wordObj.word.toLowerCase()}</strong></div>
                     <div class="options-grid" id="raceChoiceGrid"></div>
                 </div>
             `;
-            const grid = document.getElementById('raceChoiceGrid');
+            let grid = document.getElementById('raceChoiceGrid');
             grid.innerHTML = '';
-            options.forEach(opt => {
-                const btn = document.createElement('button');
+            opts.forEach(opt => {
+                let btn = document.createElement('button');
                 btn.className = 'option-btn';
                 btn.innerText = opt;
-                btn.addEventListener('click', () => handleRaceChoice(opt, wordObj.meaning));
+                btn.onclick = () => handleRaceChoice(opt, q.wordObj.meaning);
                 grid.appendChild(btn);
             });
-            currentRaceSpellInput = null;
+            spellInput = null;
         }
-        // 提交按钮逻辑
-        const newSubmit = raceSubmitBtn.cloneNode(true);
-        raceSubmitBtn.parentNode.replaceChild(newSubmit, raceSubmitBtn);
-        newSubmit.addEventListener('click', () => {
-            if (!currentRace || currentRace.answered) {
-                if(currentRace && !currentRace.answered) return;
-                else { if(currentRace && currentRace.answered) raceFinalMsgDiv.innerHTML = "⚠️ 本题已完成，请继续"; return; }
+        // 提交按钮重新挂载
+        let newBtn = raceSubmit.cloneNode(true);
+        raceSubmit.parentNode.replaceChild(newBtn, raceSubmit);
+        window.raceSubmit = newBtn;
+        newBtn.onclick = () => {
+            if (!race || race.answered) { if(race && race.answered) raceFinal.innerHTML = "⚠️ 本题已完成，继续下一题吧"; return; }
+            let qq = race.current();
+            if (qq.type === 'spell' && spellInput) {
+                let ans = spellInput.value;
+                let { ok, correct } = race.submitSpell(ans, qq.wordObj.word);
+                raceFinal.innerHTML = ok ? "✅ 正确! +1分" : `❌ 错误! 正确答案: ${correct.toLowerCase()}`;
+                goNextRace();
+            } else if (qq.type === 'choice') {
+                raceFinal.innerHTML = "⚠️ 请直接点击上方选项～";
             }
-            const q = currentRace.getCurrentQuestion();
-            if (!q) return;
-            if (q.type === 'spell' && currentRaceSpellInput) {
-                const answer = currentRaceSpellInput.value;
-                const { isCorrect, correctAnswer } = currentRace.submitSpellAnswer(answer, q.wordObj.word);
-                raceFinalMsgDiv.innerHTML = isCorrect ? `✅ 正确! +1分` : `❌ 错误! 正确答案: ${correctAnswer.toLowerCase()}`;
-                goToNextRaceQuestion();
-            } else if (q.type === 'choice') {
-                raceFinalMsgDiv.innerHTML = `⚠️ 请直接点击上方选项选择答案～`;
-            }
-        });
+        };
     }
-    
-    function handleRaceChoice(selected, correctMeaning) {
-        if (!currentRace || currentRace.answered) return;
-        const { isCorrect } = currentRace.submitChoiceAnswer(selected, correctMeaning);
-        raceFinalMsgDiv.innerHTML = isCorrect ? `✅ 正确! +1分` : `❌ 错误! 正确答案: ${correctMeaning}`;
-        goToNextRaceQuestion();
+
+    function handleRaceChoice(selected, correct) {
+        if (!race || race.answered) return;
+        let { ok } = race.submitChoice(selected, correct);
+        raceFinal.innerHTML = ok ? "✅ 正确! +1分" : `❌ 错误! 正确答案: ${correct}`;
+        goNextRace();
     }
-    
-    function goToNextRaceQuestion() {
-        if (!currentRace) return;
-        currentRace.next();
-        const progress = currentRace.getProgress();
-        raceScoreSpan.innerText = progress.score;
-        if (currentRace.isFinished()) {
-            renderRaceQuestion();
-        } else {
-            renderRaceQuestion();
-        }
+
+    function goNextRace() {
+        if (!race) return;
+        race.next();
+        if (race.finished()) renderRace();
+        else renderRace();
     }
-    
-    function startRace() {
-        currentRace = new RaceManager(fullVocabulary, 100);
-        renderRaceQuestion();
-    }
-    raceRestartBtn.addEventListener('click', () => startRace());
-    
-    // ---------- 模式切换 ----------
-    const modeBtns = document.querySelectorAll('.mode-btn');
+
+    function startRace() { race = new Race(fullVocab, 100); renderRace(); }
+    raceRestart.onclick = startRace;
+
+    // ================= 模式切换 =================
     const panels = {
         mode1: document.getElementById('mode1Panel'),
         mode2: document.getElementById('mode2Panel'),
         race: document.getElementById('racePanel')
     };
-    function switchMode(modeId) {
-        Object.keys(panels).forEach(id => panels[id].classList.remove('active-panel'));
-        panels[modeId].classList.add('active-panel');
-        modeBtns.forEach(btn => {
-            if (btn.dataset.mode === modeId) btn.classList.add('active');
+    const btns = document.querySelectorAll('.mode-btn');
+    function switchTo(mode) {
+        Object.keys(panels).forEach(k => panels[k].classList.remove('active-panel'));
+        panels[mode].classList.add('active-panel');
+        btns.forEach(btn => {
+            if (btn.dataset.mode === mode) btn.classList.add('active');
             else btn.classList.remove('active');
         });
-        if (modeId === 'mode1') refreshMode1();
-        if (modeId === 'mode2') { 
-            if (mode2Timeout) clearTimeout(mode2Timeout);
-            isMode2Waiting = false;
-            loadMode2Question(); 
-        }
-        if (modeId === 'race' && (!currentRace || currentRace.isFinished())) startRace();
+        if (mode === 'mode1') refreshMode1();
+        if (mode === 'mode2') { if (mode2Timer) clearTimeout(mode2Timer); waitingForNext = false; loadMode2(); }
+        if (mode === 'race') { if (!race || race.finished()) startRace(); else renderRace(); }
     }
-    modeBtns.forEach(btn => {
-        btn.addEventListener('click', () => switchMode(btn.dataset.mode));
-    });
-    
-    // 初始化全部
+    btns.forEach(btn => btn.onclick = () => switchTo(btn.dataset.mode));
+
+    // 启动
     refreshMode1();
-    loadMode2Question();
+    loadMode2();
     startRace();
-    switchMode('mode1');
+    switchTo('mode1');
 </script>
 </body>
 </html>
