@@ -1,0 +1,601 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=yes, viewport-fit=cover">
+    <title>AT2 百词竞赛 · 英语学习游戏</title>
+    <style>
+        * {
+            box-sizing: border-box;
+            -webkit-tap-highlight-color: transparent;
+        }
+
+        body {
+            background: linear-gradient(145deg, #1e2b3c 0%, #0f1a24 100%);
+            font-family: system-ui, 'Segoe UI', 'Poppins', 'Roboto', sans-serif;
+            min-height: 100vh;
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            padding: 12px;
+            margin: 0;
+        }
+
+        .game-container {
+            max-width: 650px;
+            width: 100%;
+            background: rgba(255, 255, 240, 0.96);
+            border-radius: 48px 32px 48px 32px;
+            box-shadow: 0 20px 35px rgba(0, 0, 0, 0.3), inset 0 1px 2px rgba(255, 255, 255, 0.6);
+            overflow: hidden;
+        }
+
+        .mode-tabs {
+            display: flex;
+            background: #2c3e2f;
+            gap: 6px;
+            padding: 10px 16px 0 16px;
+        }
+
+        .mode-btn {
+            flex: 1;
+            background: #3e5a42;
+            border: none;
+            padding: 12px 6px;
+            font-size: 0.9rem;
+            font-weight: bold;
+            color: #e9f5e1;
+            border-radius: 32px 32px 18px 18px;
+            cursor: pointer;
+            transition: 0.2s;
+            letter-spacing: 0.5px;
+            box-shadow: inset 0 -2px 0 #1e2a1c;
+            touch-action: manipulation;
+        }
+
+        .mode-btn.active {
+            background: #ffcd7e;
+            color: #2d3e2a;
+            box-shadow: 0 4px 10px rgba(0,0,0,0.2);
+            border-bottom: 3px solid #f5a623;
+        }
+
+        .panel {
+            padding: 20px 18px 32px;
+            display: none;
+            animation: fadeIn 0.25s ease;
+        }
+
+        .panel.active-panel {
+            display: block;
+        }
+
+        @keyframes fadeIn {
+            from { opacity: 0; transform: translateY(8px);}
+            to { opacity: 1; transform: translateY(0);}
+        }
+
+        .quiz-card {
+            background: #fffef7;
+            border-radius: 40px;
+            padding: 20px 16px;
+            box-shadow: 0 10px 20px rgba(0,0,0,0.08);
+            margin-bottom: 12px;
+            text-align: center;
+        }
+
+        .question-text {
+            font-size: 1.7rem;
+            font-weight: 700;
+            color: #1e3c2c;
+            margin: 12px 0;
+            word-break: break-word;
+        }
+
+        .hint-area {
+            background: #eef4e0;
+            padding: 14px;
+            border-radius: 48px;
+            font-family: monospace;
+            font-size: 1.4rem;
+            letter-spacing: 3px;
+            margin: 12px 0;
+            color: #2b4b1e;
+            font-weight: bold;
+            overflow-x: auto;
+            white-space: pre-wrap;
+            word-break: break-all;
+        }
+
+        .input-group {
+            display: flex;
+            gap: 12px;
+            flex-wrap: wrap;
+            justify-content: center;
+            margin: 18px 0;
+        }
+
+        input {
+            flex: 3;
+            min-width: 160px;
+            padding: 14px 18px;
+            font-size: 1rem;
+            border: 2px solid #cbd5b5;
+            border-radius: 60px;
+            outline: none;
+            background: white;
+            font-weight: 500;
+            width: 100%;
+        }
+
+        input:focus {
+            border-color: #f5a623;
+            box-shadow: 0 0 0 3px rgba(245,166,35,0.2);
+        }
+
+        button {
+            background: #ffb347;
+            border: none;
+            padding: 12px 20px;
+            border-radius: 50px;
+            font-weight: bold;
+            font-size: 1rem;
+            cursor: pointer;
+            transition: 0.2s;
+            color: #2c2c2c;
+            box-shadow: 0 3px 6px rgba(0,0,0,0.1);
+            touch-action: manipulation;
+        }
+
+        button.primary {
+            background: #3f8f5e;
+            color: white;
+            box-shadow: 0 4px 0 #1e562e;
+        }
+
+        .options-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(160px, 1fr));
+            gap: 14px;
+            margin: 24px 0;
+        }
+
+        .option-btn {
+            background: #f0f2ea;
+            padding: 14px 8px;
+            border-radius: 60px;
+            font-size: 1rem;
+            font-weight: 500;
+            border: 1px solid #cfdfb9;
+            transition: all 0.15s;
+            text-align: center;
+            touch-action: manipulation;
+        }
+
+        .option-btn:active {
+            background: #ffe1a0;
+            transform: scale(0.97);
+        }
+
+        .feedback {
+            background: #e9ecef;
+            border-radius: 40px;
+            padding: 12px;
+            margin-top: 18px;
+            font-size: 0.95rem;
+            font-weight: 500;
+        }
+
+        .score-progress {
+            display: flex;
+            justify-content: space-between;
+            align-items: baseline;
+            background: #d9e3c6;
+            padding: 10px 18px;
+            border-radius: 40px;
+            margin-bottom: 20px;
+            font-weight: bold;
+            flex-wrap: wrap;
+            gap: 8px;
+        }
+
+        .restart-btn {
+            background: #1e6f5c;
+            color: white;
+            margin-top: 8px;
+            padding: 10px 20px;
+        }
+
+        @media (max-width: 480px) {
+            .game-container { border-radius: 36px 24px 36px 24px; }
+            .quiz-card { padding: 18px 12px; }
+            .question-text { font-size: 1.4rem; }
+            .hint-area { font-size: 1.2rem; letter-spacing: 2px; padding: 10px; }
+            .mode-btn { font-size: 0.8rem; padding: 10px 4px; }
+            .options-grid { grid-template-columns: 1fr; gap: 12px; }
+            .option-btn { padding: 12px; }
+            button, .restart-btn { padding: 10px 18px; font-size: 0.9rem; }
+            input { padding: 12px 16px; font-size: 0.95rem; }
+        }
+    </style>
+</head>
+<body>
+<div class="game-container">
+    <div class="mode-tabs">
+        <button class="mode-btn" data-mode="mode1">✍️ 拼写填空</button>
+        <button class="mode-btn" data-mode="mode2">📖 释义选择</button>
+        <button class="mode-btn" data-mode="race">🏆 百词竞赛</button>
+    </div>
+
+    <!-- 模式一 -->
+    <div id="mode1Panel" class="panel">
+        <div class="quiz-card">
+            <div class="score-progress" style="justify-content: center;">📘 练习模式 · 随机出题</div>
+            <div id="mode1Meaning" class="question-text">🍎 苹果</div>
+            <div id="mode1HintBox" class="hint-area">_ _ _ _ _</div>
+            <div class="input-group">
+                <input type="text" id="mode1Input" placeholder="输入完整单词 (小写)" autocomplete="off">
+                <button id="mode1CheckBtn" class="primary">✓ 核对</button>
+                <button id="mode1NextBtn">⏩ 下一词</button>
+            </div>
+            <div id="mode1Feedback" class="feedback">✨ 根据中文和提示字母，填写完整单词~</div>
+        </div>
+    </div>
+
+    <!-- 模式二：释义选择（自动跳转修复版） -->
+    <div id="mode2Panel" class="panel">
+        <div class="quiz-card">
+            <div class="score-progress" style="justify-content: center;">🔤 选择正确的释义</div>
+            <div id="mode2Word" class="question-text">cheap</div>
+            <div id="mode2Options" class="options-grid"></div>
+            <div id="mode2Feedback" class="feedback">✅ 点击选项，1秒后自动进入下一题</div>
+        </div>
+    </div>
+
+    <!-- 竞赛模块 -->
+    <div id="racePanel" class="panel">
+        <div class="quiz-card">
+            <div class="score-progress">
+                <span>🏅 得分: <span id="raceScore">0</span></span>
+                <span>📊 进度: <span id="raceCurrent">0</span> / <span id="raceTotal">100</span></span>
+            </div>
+            <div id="raceQuestionArea"></div>
+            <div id="raceNextArea" style="text-align: center; margin-top: 15px;">
+                <button id="raceSubmitBtn" class="primary" style="display: none;">提交答案</button>
+                <button id="raceRestartBtn" class="restart-btn">🔄 重新竞赛</button>
+            </div>
+            <div id="raceFinalMsg" class="feedback"></div>
+        </div>
+    </div>
+</div>
+
+<script>
+    // ---------- 单词库 (全部小写) ----------
+    const wordsData = [
+        { word: "cheap", meaning: "便宜的" },{ word: "weigh", meaning: "称重量;重达" },{ word: "musician", meaning: "音乐家" },
+        { word: "race", meaning: "种族;比赛" },{ word: "neighborhood", meaning: "社区;邻近地区" },{ word: "rainbow", meaning: "彩虹" },
+        { word: "lose weight", meaning: "减肥" },{ word: "shy", meaning: "害羞的" },{ word: "zebra", meaning: "斑马" },
+        { word: "pass by", meaning: "走过;逝去" },{ word: "save", meaning: "救;节约;储蓄" },{ word: "pilot", meaning: "领航员" },
+        { word: "weather", meaning: "天气" },{ word: "large", meaning: "大的;广阔的" },{ word: "subway", meaning: "地铁" },
+        { word: "similar", meaning: "相似的" },{ word: "muscle", meaning: "肌肉" },{ word: "success", meaning: "成功" },
+        { word: "plant", meaning: "植物" },{ word: "temperature", meaning: "温度" },{ word: "kill", meaning: "杀死" },
+        { word: "upside-down", meaning: "颠倒的;乱七八糟" },{ word: "shine", meaning: "发光;照耀" },{ word: "ready", meaning: "准备好的" },
+        { word: "again", meaning: "再次" },{ word: "university", meaning: "大学" },{ word: "screen", meaning: "屏幕;筛选" },
+        { word: "nervous", meaning: "紧张的;焦虑的" },{ word: "responsible", meaning: "负责的;有责任" },{ word: "luckily", meaning: "幸运地;幸亏" },
+        { word: "nightmare", meaning: "噩梦" },{ word: "organization", meaning: "机构;组织" },{ word: "noisy", meaning: "嘈杂的" },
+        { word: "safe", meaning: "安全的" },{ word: "male", meaning: "男的;男性" },{ word: "mirror", meaning: "镜子" },
+        { word: "introduce", meaning: "介绍;引进" },{ word: "welcome", meaning: "欢迎" },{ word: "lake", meaning: "湖泊" },
+        { word: "trunk", meaning: "树干" },{ word: "millionaire", meaning: "百万富翁" },{ word: "selfish", meaning: "自私的" },
+        { word: "push", meaning: "推;推动" },{ word: "leader", meaning: "领导者" },{ word: "pasta", meaning: "意大利面食" },
+        { word: "librarian", meaning: "图书管理员" },{ word: "interest", meaning: "使感兴趣" },{ word: "vitamin", meaning: "维生素" },
+        { word: "include", meaning: "包括;包含" },{ word: "messy", meaning: "棘手的;难办的" },{ word: "worried", meaning: "担心的" },
+        { word: "record", meaning: "录音;记录" },{ word: "natural habitat", meaning: "自然生境" },{ word: "reason", meaning: "理由;推理" },
+        { word: "update", meaning: "更新" },{ word: "message", meaning: "消息;信息" },{ word: "rude", meaning: "粗鲁的" },
+        { word: "plastic", meaning: "塑料" },{ word: "talent", meaning: "天才;天赋" },{ word: "list", meaning: "列表;清单" },
+        { word: "warning", meaning: "警告" },{ word: "lazy", meaning: "懒惰的" },{ word: "modern", meaning: "现代的" },
+        { word: "performer", meaning: "表演者" },{ word: "speed", meaning: "速度;加速" },{ word: "shelf", meaning: "架子" },
+        { word: "technology", meaning: "技术" },{ word: "tomorrow", meaning: "明天" },{ word: "peppers", meaning: "甜椒" },
+        { word: "share", meaning: "分享;共有" },{ word: "important", meaning: "重要的" },{ word: "minute", meaning: "分钟;微小的" },
+        { word: "remember", meaning: "记得" },{ word: "energy", meaning: "能源;能量" },{ word: "end", meaning: "结束;终点" },
+        { word: "however", meaning: "然而" },{ word: "difficult", meaning: "困难的" },{ word: "cereal", meaning: "谷类" },
+        { word: "illness", meaning: "疾病" },{ word: "idea", meaning: "主意;想法" },{ word: "calcium", meaning: "钙" },
+        { word: "fresh", meaning: "新鲜的" },{ word: "beef", meaning: "牛肉" },{ word: "cotton", meaning: "棉;棉花" },
+        { word: "billion", meaning: "十亿" },{ word: "avoid", meaning: "避免" },{ word: "firefighter", meaning: "消防队员" },
+        { word: "far", meaning: "远的" },{ word: "adopt", meaning: "采用;收养" },{ word: "bookcase", meaning: "书架" },
+        { word: "build", meaning: "建造" },{ word: "heavy", meaning: "重的;繁重的" },{ word: "another", meaning: "另一个" },
+        { word: "dry", meaning: "干的;使变干" },{ word: "destroy", meaning: "摧毁" },{ word: "director", meaning: "指挥;导演" },
+        { word: "builder", meaning: "建造者" },{ word: "funny", meaning: "有趣的" },{ word: "character", meaning: "人物;角色" },
+        { word: "explain", meaning: "解释" },{ word: "arrive", meaning: "到达" },{ word: "criminal", meaning: "罪犯" },
+        { word: "design", meaning: "设计" },{ word: "alone", meaning: "单独的" },{ word: "adventure", meaning: "冒险" },
+        { word: "brain", meaning: "大脑" },{ word: "contact", meaning: "联络" },{ word: "camera", meaning: "照相机" },
+        { word: "elephant", meaning: "象" },{ word: "gorilla", meaning: "大猩猩" },{ word: "carpet", meaning: "地毯" },
+        { word: "armchair", meaning: "扶手椅" },{ word: "future", meaning: "未来" },{ word: "helicopter", meaning: "直升飞机" },
+        { word: "dentist", meaning: "牙科医生" },{ word: "celebrate", meaning: "庆祝" },{ word: "hold", meaning: "握住;拿住" },
+        { word: "hunter", meaning: "猎人" },{ word: "allowance", meaning: "津贴;零花钱" },{ word: "costume", meaning: "服装;戏装" },
+        { word: "female", meaning: "女的;女性" },{ word: "band", meaning: "乐队" },{ word: "forever", meaning: "永远" },
+        { word: "friendly", meaning: "友好的" },{ word: "horn", meaning: "号角;喇叭" },{ word: "comeback", meaning: "东山再起" },
+        { word: "find", meaning: "发现;找到" },{ word: "even if", meaning: "即使;纵然" },{ word: "busy", meaning: "忙碌的" },
+        { word: "cleaner", meaning: "清洁工人" },{ word: "decide", meaning: "决定" },{ word: "earth", meaning: "地球;土地" },
+        { word: "area", meaning: "区域;面积" },{ word: "collect", meaning: "收集" },{ word: "experience", meaning: "经验;经历" },
+        { word: "closet", meaning: "衣橱" },{ word: "award", meaning: "奖;奖品" },{ word: "dangerous", meaning: "危险的" },
+        { word: "climb", meaning: "攀爬" },{ word: "expensive", meaning: "昂贵的" },{ word: "ceremony", meaning: "典礼" },
+        { word: "button", meaning: "扣子;纽扣" },{ word: "communicate", meaning: "交流" },{ word: "clothes", meaning: "衣服" },
+        { word: "hard-working", meaning: "工作努力的" },{ word: "disappear", meaning: "消失" },{ word: "calm down", meaning: "平静下来" },
+        { word: "go on a diet", meaning: "节食" },{ word: "change", meaning: "改变" },{ word: "hiking", meaning: "远足;徒步旅行" }
+    ];
+    const fullVocab = [...wordsData];
+
+    // 辅助: 生成部分字母提示
+    function generatePartialHint(word, revealCount = 3) {
+        let w = word.toLowerCase();
+        let letters = w.split('');
+        let positions = [];
+        for (let i = 0; i < letters.length; i++) if (letters[i].match(/[a-z]/)) positions.push(i);
+        let shuffled = [...positions];
+        for (let i = shuffled.length - 1; i > 0; i--) {
+            const j = Math.floor(Math.random() * (i + 1));
+            [shuffled[i], shuffled[j]] = [shuffled[j], shuffled[i]];
+        }
+        let revealed = new Set(shuffled.slice(0, Math.min(revealCount, positions.length, Math.ceil(w.length * 0.4))));
+        let hint = [];
+        for (let i = 0; i < letters.length; i++) {
+            let ch = letters[i];
+            if (ch.match(/[a-z]/) && revealed.has(i)) hint.push(ch);
+            else if (ch.match(/[a-z]/)) hint.push('_');
+            else hint.push(ch);
+        }
+        return hint.join('');
+    }
+
+    // ================= 模式一 =================
+    const mode1Meaning = document.getElementById('mode1Meaning');
+    const mode1HintBox = document.getElementById('mode1HintBox');
+    const mode1Input = document.getElementById('mode1Input');
+    const mode1CheckBtn = document.getElementById('mode1CheckBtn');
+    const mode1NextBtn = document.getElementById('mode1NextBtn');
+    const mode1Feedback = document.getElementById('mode1Feedback');
+    let currentMode1 = null;
+
+    function randomWord() { return fullVocab[Math.floor(Math.random() * fullVocab.length)]; }
+    function refreshMode1() {
+        currentMode1 = randomWord();
+        mode1Meaning.innerText = currentMode1.meaning;
+        const raw = currentMode1.word.toLowerCase();
+        mode1HintBox.innerText = `✨ 提示: ${generatePartialHint(raw, 3)}  (长度 ${raw.length})`;
+        mode1Input.value = '';
+        mode1Feedback.innerHTML = '💡 根据释义和提示填写完整单词～';
+    }
+    function checkMode1() {
+        if (!currentMode1) return;
+        const user = mode1Input.value.trim().toLowerCase();
+        if (!user) { mode1Feedback.innerHTML = "⚠️ 请输入单词"; return; }
+        const correct = currentMode1.word.toLowerCase();
+        if (user === correct) mode1Feedback.innerHTML = `✅ 完美！ “${correct}” 正确！ 🎉`;
+        else mode1Feedback.innerHTML = `❌ 错误！ 正确答案是 “${correct}”。继续努力～`;
+    }
+    mode1CheckBtn.onclick = checkMode1;
+    mode1NextBtn.onclick = refreshMode1;
+
+    // ================= 模式二 (自动跳转，已修复) =================
+    const mode2Word = document.getElementById('mode2Word');
+    const mode2Options = document.getElementById('mode2Options');
+    const mode2Feedback = document.getElementById('mode2Feedback');
+    let currentMode2 = null;
+    let mode2Timer = null;
+    let waitingForNext = false;   // 防连点 & 跳转保护
+
+    function getRandomOptions(correctMeaning) {
+        let others = fullVocab.filter(item => item.meaning !== correctMeaning).map(item => item.meaning);
+        others = [...new Set(others)];
+        while (others.length < 3) others.push("美丽的", "快速的", "聪明的", "巨大的");
+        let shuffled = [...others].sort(() => 0.5 - Math.random());
+        let opts = shuffled.slice(0, 3);
+        opts.push(correctMeaning);
+        for (let i = opts.length - 1; i > 0; i--) {
+            const j = Math.floor(Math.random() * (i + 1));
+            [opts[i], opts[j]] = [opts[j], opts[i]];
+        }
+        return opts;
+    }
+
+    function loadMode2() {
+        if (mode2Timer) clearTimeout(mode2Timer);
+        waitingForNext = false;
+        currentMode2 = randomWord();
+        mode2Word.innerText = currentMode2.word.toLowerCase();
+        const opts = getRandomOptions(currentMode2.meaning);
+        mode2Options.innerHTML = '';
+        opts.forEach(opt => {
+            const btn = document.createElement('button');
+            btn.className = 'option-btn';
+            btn.innerText = opt;
+            btn.onclick = () => {
+                if (waitingForNext) return;   // 已经在等待下一题
+                waitingForNext = true;
+                const isCorrect = (opt === currentMode2.meaning);
+                if (isCorrect) {
+                    mode2Feedback.innerHTML = `🎉 正确！ “${currentMode2.word.toLowerCase()}” 释义正确！ 1秒后下一题~`;
+                } else {
+                    mode2Feedback.innerHTML = `❌ 错误！ “${currentMode2.word.toLowerCase()}” 的正确释义是 “${currentMode2.meaning}”。1秒后下一题~`;
+                }
+                // 设置定时器自动刷新
+                mode2Timer = setTimeout(() => {
+                    loadMode2();      // 加载新题目，重置 waitingForNext
+                    mode2Timer = null;
+                }, 1000);
+            };
+            mode2Options.appendChild(btn);
+        });
+        mode2Feedback.innerHTML = "🔍 请选择最符合的释义，1秒后自动切换";
+    }
+
+    // ================= 竞赛模块 =================
+    class Race {
+        constructor(bank, total = 100) {
+            this.bank = [...bank];
+            this.total = Math.min(total, this.bank.length);
+            this.questions = [];
+            this.idx = 0;
+            this.score = 0;
+            this.answered = false;
+            this.init();
+        }
+        init() {
+            let shuffled = [...this.bank];
+            for (let i = shuffled.length - 1; i > 0; i--) {
+                const j = Math.floor(Math.random() * (i + 1));
+                [shuffled[i], shuffled[j]] = [shuffled[j], shuffled[i]];
+            }
+            let selected = shuffled.slice(0, this.total);
+            for (let w of selected) {
+                let type = Math.random() < 0.5 ? 'spell' : 'choice';
+                this.questions.push({ wordObj: w, type });
+            }
+        }
+        current() { return this.idx < this.questions.length ? this.questions[this.idx] : null; }
+        submitSpell(ans, correct) {
+            let norm = s => s.trim().toLowerCase().replace(/\s+/g, ' ').replace(/[^\w\s-]/g, '');
+            let ok = norm(ans) === norm(correct);
+            if (ok) this.score++;
+            this.answered = true;
+            return { ok, correct };
+        }
+        submitChoice(sel, correct) {
+            let ok = sel === correct;
+            if (ok) this.score++;
+            this.answered = true;
+            return { ok };
+        }
+        next() {
+            if (this.idx < this.questions.length - 1) { this.idx++; this.answered = false; return true; }
+            return false;
+        }
+        finished() { return this.idx >= this.questions.length; }
+        progress() { return { cur: this.idx + 1, total: this.questions.length, score: this.score }; }
+    }
+
+    let race = null;
+    const raceArea = document.getElementById('raceQuestionArea');
+    const raceScore = document.getElementById('raceScore');
+    const raceCur = document.getElementById('raceCurrent');
+    const raceTotal = document.getElementById('raceTotal');
+    const raceSubmit = document.getElementById('raceSubmitBtn');
+    const raceRestart = document.getElementById('raceRestartBtn');
+    const raceFinal = document.getElementById('raceFinalMsg');
+    let spellInput = null;
+
+    function renderRace() {
+        if (!race || race.finished()) {
+            let p = race ? race.progress() : { score: 0, total: 100 };
+            raceFinal.innerHTML = `🏁 竞赛完成! 得分: ${p.score} / ${p.total} 🎖️ ${p.score >= 70 ? '🏆 单词大师' : '📚 继续加油!'}`;
+            raceArea.innerHTML = `<div style="text-align:center;padding:20px;">🎉 恭喜完成百词竞赛！ 🎉<br> 最终得分: ${p.score} / ${p.total}</div>`;
+            raceSubmit.style.display = 'none';
+            return;
+        }
+        raceFinal.innerHTML = '';
+        raceSubmit.style.display = 'inline-block';
+        let prog = race.progress();
+        raceScore.innerText = prog.score;
+        raceCur.innerText = prog.cur;
+        raceTotal.innerText = prog.total;
+
+        let q = race.current();
+        if (q.type === 'spell') {
+            let hint = generatePartialHint(q.wordObj.word, 3);
+            raceArea.innerHTML = `
+                <div style="text-align:center;">
+                    <div class="question-text" style="font-size:1.4rem;">📖 中文释义:</div>
+                    <div class="question-text" style="background:#fef1cf; border-radius:60px; padding:10px;">${q.wordObj.meaning}</div>
+                    <div class="hint-area">🔍 字母线索: ${hint} (共 ${q.wordObj.word.length} 字符)</div>
+                    <div class="input-group"><input type="text" id="raceSpellInput" placeholder="输入完整单词" autocomplete="off"></div>
+                </div>
+            `;
+            spellInput = document.getElementById('raceSpellInput');
+        } else {
+            let others = fullVocab.map(v => v.meaning).filter(m => m !== q.wordObj.meaning);
+            let opts = [...new Set(others)].sort(() => 0.5 - Math.random()).slice(0, 3);
+            opts.push(q.wordObj.meaning);
+            for (let i = opts.length - 1; i > 0; i--) {
+                const j = Math.floor(Math.random() * (i + 1));
+                [opts[i], opts[j]] = [opts[j], opts[i]];
+            }
+            raceArea.innerHTML = `
+                <div style="text-align:center;">
+                    <div class="question-text">🔤 单词: <strong style="background:#ffecb3; padding:6px 15px; border-radius:40px;">${q.wordObj.word.toLowerCase()}</strong></div>
+                    <div class="options-grid" id="raceChoiceGrid"></div>
+                </div>
+            `;
+            let grid = document.getElementById('raceChoiceGrid');
+            grid.innerHTML = '';
+            opts.forEach(opt => {
+                let btn = document.createElement('button');
+                btn.className = 'option-btn';
+                btn.innerText = opt;
+                btn.onclick = () => handleRaceChoice(opt, q.wordObj.meaning);
+                grid.appendChild(btn);
+            });
+            spellInput = null;
+        }
+        // 提交按钮重新挂载
+        let newBtn = raceSubmit.cloneNode(true);
+        raceSubmit.parentNode.replaceChild(newBtn, raceSubmit);
+        window.raceSubmit = newBtn;
+        newBtn.onclick = () => {
+            if (!race || race.answered) { if(race && race.answered) raceFinal.innerHTML = "⚠️ 本题已完成，继续下一题吧"; return; }
+            let qq = race.current();
+            if (qq.type === 'spell' && spellInput) {
+                let ans = spellInput.value;
+                let { ok, correct } = race.submitSpell(ans, qq.wordObj.word);
+                raceFinal.innerHTML = ok ? "✅ 正确! +1分" : `❌ 错误! 正确答案: ${correct.toLowerCase()}`;
+                goNextRace();
+            } else if (qq.type === 'choice') {
+                raceFinal.innerHTML = "⚠️ 请直接点击上方选项～";
+            }
+        };
+    }
+
+    function handleRaceChoice(selected, correct) {
+        if (!race || race.answered) return;
+        let { ok } = race.submitChoice(selected, correct);
+        raceFinal.innerHTML = ok ? "✅ 正确! +1分" : `❌ 错误! 正确答案: ${correct}`;
+        goNextRace();
+    }
+
+    function goNextRace() {
+        if (!race) return;
+        race.next();
+        if (race.finished()) renderRace();
+        else renderRace();
+    }
+
+    function startRace() { race = new Race(fullVocab, 100); renderRace(); }
+    raceRestart.onclick = startRace;
+
+    // ================= 模式切换 =================
+    const panels = {
+        mode1: document.getElementById('mode1Panel'),
+        mode2: document.getElementById('mode2Panel'),
+        race: document.getElementById('racePanel')
+    };
+    const btns = document.querySelectorAll('.mode-btn');
+    function switchTo(mode) {
+        Object.keys(panels).forEach(k => panels[k].classList.remove('active-panel'));
+        panels[mode].classList.add('active-panel');
+        btns.forEach(btn => {
+            if (btn.dataset.mode === mode) btn.classList.add('active');
+            else btn.classList.remove('active');
+        });
+        if (mode === 'mode1') refreshMode1();
+        if (mode === 'mode2') { if (mode2Timer) clearTimeout(mode2Timer); waitingForNext = false; loadMode2(); }
+        if (mode === 'race') { if (!race || race.finished()) startRace(); else renderRace(); }
+    }
+    btns.forEach(btn => btn.onclick = () => switchTo(btn.dataset.mode));
+
+    // 启动
+    refreshMode1();
+    loadMode2();
+    startRace();
+    switchTo('mode1');
+</script>
+</body>
+</html>
